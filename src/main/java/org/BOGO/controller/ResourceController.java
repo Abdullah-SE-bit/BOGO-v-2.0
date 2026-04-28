@@ -6,16 +6,8 @@ import org.BOGO.service.RouteReviseService;
 
 public class ResourceController {
 
-    private final HandleDriverService  handleDriverService;
-    private final RouteReviseService   routeReviseService;
-    private final ManageStopsService   manageStopsService;
-
-    public ResourceController(HandleDriverService handleDriverService,
-                              RouteReviseService routeReviseService,
-                              ManageStopsService manageStopsService) {
-        this.handleDriverService = handleDriverService;
-        this.routeReviseService  = routeReviseService;
-        this.manageStopsService  = manageStopsService;
-    }
+    private final HandleDriverService  handleDriverService = new HandleDriverService();
+    private final RouteReviseService   routeReviseService = new RouteReviseService();
+    private final ManageStopsService   manageStopsService = new ManageStopsService();
 
 }

@@ -10,13 +10,10 @@ import org.BOGO.repository.UserRepository;
 
 public class IssueReportingService {
 
-    private final BusRepository  busRepository;
-    private final UserRepository userRepository;
+    private final BusRepository  busRepository = new BusRepository();
+    private final UserRepository userRepository = new UserRepository();
 
-    public IssueReportingService(BusRepository busRepository, UserRepository userRepository) {
-        this.busRepository  = busRepository;
-        this.userRepository = userRepository;
-    }
+
 
     /**
      * Records an incident report for the driver at the given location.

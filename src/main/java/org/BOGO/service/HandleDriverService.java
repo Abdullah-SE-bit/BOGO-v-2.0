@@ -11,17 +11,10 @@ import java.util.List;
 
 public class HandleDriverService {
 
-    private final UserRepository  userRepository;
-    private final BusRepository   busRepository;
-    private final RouteRepository routeRepository;
+    private final UserRepository  userRepository = new UserRepository();
+    private final BusRepository   busRepository = new BusRepository();
+    private final RouteRepository routeRepository = new RouteRepository();
 
-    public HandleDriverService(UserRepository userRepository,
-                               BusRepository busRepository,
-                               RouteRepository routeRepository) {
-        this.userRepository  = userRepository;
-        this.busRepository   = busRepository;
-        this.routeRepository = routeRepository;
-    }
 
     /**
      * Persists a new driver record created by the admin.

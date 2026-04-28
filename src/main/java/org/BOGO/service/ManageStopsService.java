@@ -9,13 +9,9 @@ import java.util.List;
 
 public class ManageStopsService {
 
-    private final StopRepository  stopRepository;
-    private final RouteRepository routeRepository;
+    private final StopRepository  stopRepository = new StopRepository();
+    private final RouteRepository routeRepository = new RouteRepository();
 
-    public ManageStopsService(StopRepository stopRepository, RouteRepository routeRepository) {
-        this.stopRepository  = stopRepository;
-        this.routeRepository = routeRepository;
-    }
 
     /**
      * Validates and persists a new stop, then propagates it to the routing engine.

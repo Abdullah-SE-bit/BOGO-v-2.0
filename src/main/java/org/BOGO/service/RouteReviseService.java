@@ -9,11 +9,8 @@ import org.BOGO.repository.RouteRepository;
 
 public class RouteReviseService {
 
-    private final RouteRepository routeRepository;
+    private final RouteRepository routeRepository = new RouteRepository();
 
-    public RouteReviseService(RouteRepository routeRepository) {
-        this.routeRepository = routeRepository;
-    }
 
     /**
      * Applies admin-approved changes to the route and persists the result.

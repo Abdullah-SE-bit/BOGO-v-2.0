@@ -5,18 +5,15 @@ import org.BOGO.service.CancelationService;
 
 public class BookingController {
 
-    private final BookingService     bookingService;
-    private final CancelationService cancelationService;
+    private final BookingService     bookingService = new BookingService();
+    private final CancelationService cancelationService = new CancelationService();
 
-    public BookingController(BookingService bookingService,
-                             CancelationService cancelationService) {
-        this.bookingService     = bookingService;
-        this.cancelationService = cancelationService;
+    public BookingController() {}
+
+    public boolean BookBus(int passengerID, int busID, int paymentMethod) {
+
+        return false;
     }
 
-    /**
-     * POST /api/bookings
-     * Books a ride for the passenger from pickup to destination stop.
-     */
 
 }

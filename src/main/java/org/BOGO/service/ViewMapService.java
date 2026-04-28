@@ -9,13 +9,9 @@ import java.util.List;
 
 public class ViewMapService {
 
-    private final StopRepository  stopRepository;
-    private final RouteRepository routeRepository;
+    private final StopRepository  stopRepository = new StopRepository();
+    private final RouteRepository routeRepository = new RouteRepository();
 
-    public ViewMapService(StopRepository stopRepository, RouteRepository routeRepository) {
-        this.stopRepository  = stopRepository;
-        this.routeRepository = routeRepository;
-    }
 
     /**
      * Fetches and returns all stops and active routes for map rendering.

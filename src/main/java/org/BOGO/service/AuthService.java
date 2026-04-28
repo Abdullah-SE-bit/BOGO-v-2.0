@@ -6,12 +6,9 @@ import org.BOGO.repository.UserRepository;
 
 public class AuthService {
 
-    private final UserRepository userRepository;
+    private final UserRepository userRepository = new UserRepository();
     
 
-    public AuthService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     /**
      * Authenticates a user by email and password.

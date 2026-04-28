@@ -2,12 +2,11 @@ package org.BOGO;
 
 import org.BOGO.domain.transport.Location;
 import org.BOGO.domain.transport.Map;
-import org.BOGO.domain.transport.Stop;
 import org.BOGO.service.PathBuildingService;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class TransportApplication {
+public class Test {
     public static void main(String[] args) {
 
 

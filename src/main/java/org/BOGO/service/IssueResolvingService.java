@@ -9,13 +9,9 @@ import org.BOGO.repository.UserRepository;
 
 public class IssueResolvingService {
 
-    private final BusRepository  busRepository;
-    private final UserRepository userRepository;
+    private final BusRepository  busRepository = new BusRepository();
+    private final UserRepository userRepository = new UserRepository();
 
-    public IssueResolvingService(BusRepository busRepository, UserRepository userRepository) {
-        this.busRepository  = busRepository;
-        this.userRepository = userRepository;
-    }
 
     /**
      * Retrieves the full incident message/log for the given incident ID.

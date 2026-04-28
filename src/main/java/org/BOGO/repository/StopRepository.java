@@ -1,4 +1,4 @@
 package org.BOGO.repository;
 
-public interface StopRepository {
+public class StopRepository {
 }

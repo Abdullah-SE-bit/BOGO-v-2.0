@@ -5,14 +5,10 @@ import org.BOGO.service.ViewMapService;
 
 public class MapController {
 
-    private final ViewMapService    viewMapService;
-    private final ManageStopsService manageStopsService;
+    private final ViewMapService    viewMapService = new ViewMapService();
+    private final ManageStopsService manageStopsService = new ManageStopsService();
 
-    public MapController(ViewMapService viewMapService,
-                         ManageStopsService manageStopsService) {
-        this.viewMapService     = viewMapService;
-        this.manageStopsService = manageStopsService;
-    }
+
 
 
 }

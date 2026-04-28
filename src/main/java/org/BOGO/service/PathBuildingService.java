@@ -11,10 +11,12 @@ import java.util.*;
 public class PathBuildingService {
     private Map map;
 
-    //------------Constructor-------------
-    public PathBuildingService(Map map) {
-        this.map = map;
+    public PathBuildingService() {
     }
+    public PathBuildingService(Map map) {
+    }
+
+    //------------Constructor-------------
 
     //----------BFS Shortest Path----------
     public Path buildPath(int sourceID,int destinationID) {

@@ -11,16 +11,13 @@ import java.util.List;
 
 public class BookingService {
 
-    private final BookingRepository bookingRepository;
-    private final BusRepository     busRepository;
+    private BookingRepository bookingRepository;
+    private BusRepository     busRepository;
 
     private Booking booking;
 
 
-    public BookingService(BookingRepository bookingRepository, BusRepository busRepository) {
-        this.bookingRepository = bookingRepository;
-        this.busRepository     = busRepository;
-    }
+    public BookingService() {}
 
     /**
      * Creates, persists, and returns a confirmed Booking for the given passenger,

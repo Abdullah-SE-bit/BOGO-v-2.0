@@ -8,11 +8,8 @@ import java.util.List;
 
 public class NotificationService {
 
-    private final UserRepository userRepository;
+    private final UserRepository userRepository = new UserRepository();
 
-    public NotificationService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     /**
      * Creates and delivers a notification to a single user.

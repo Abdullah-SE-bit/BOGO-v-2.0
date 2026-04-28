@@ -7,11 +7,9 @@ import org.BOGO.repository.BookingRepository;
 
 public class CancelationService {
 
-    private final BookingRepository bookingRepository;
+    private final BookingRepository bookingRepository = new BookingRepository();
 
-    public CancelationService(BookingRepository bookingRepository) {
-        this.bookingRepository = bookingRepository;
-    }
+    public CancelationService() {}
 
     /**
      * Cancels the specified booking for the passenger.
