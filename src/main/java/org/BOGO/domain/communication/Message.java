@@ -14,11 +14,11 @@ public class Message {
     // ---------- Constructors ----------
     public Message(int ID, String content) {
         messageID = ID;
-        content = message;
-//        sentTime = System.currentTimeMillis();
+        message = content;
+        sentTime = LocalDateTime.now();
     }
 
-    String getMessage() {
+    public String getMessage() {
         return message;
     }
 

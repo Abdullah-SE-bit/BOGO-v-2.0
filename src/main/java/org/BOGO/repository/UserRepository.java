@@ -2,34 +2,82 @@ package org.BOGO.repository;
 
 import org.BOGO.config.DatabaseConfig;
 import org.BOGO.domain.common.PersonalDetails;
+import org.BOGO.domain.user.Admin;
+import org.BOGO.domain.user.Driver;
+import org.BOGO.domain.user.Passenger;
+import org.BOGO.domain.user.User;
 
 import java.sql.*;
 
-/**
- * JDBC repository for User-related DB operations.
- * Handles read/write for the Users table and session tokens.
- */
 public class UserRepository {
-
-    /**
-     * Finds a user's row by email address.
-     * Returns a PersonalDetails object populated from the DB, or null if not found.
-     */
-    public PersonalDetails findByEmail(String email) {
-        String sql = "SELECT userID, name, email, phoneNumber, password FROM Users WHERE email = ?";
+    public User findUserByEmail(String email) {
+        String sql = """
+                SELECT u.UserId, pd.PdId, pd.Name, pd.Email, pd.Password, pd.CNIC,
+                       d.DriverID,
+                       CASE
+                         WHEN a.UserId IS NOT NULL THEN 'ADMIN'
+                         WHEN d.UserId IS NOT NULL THEN 'DRIVER'
+                         WHEN p.UserId IS NOT NULL THEN 'PASSENGER'
+                       END AS RoleName
+                FROM PERSONAL_DETAILS pd
+                JOIN USERS u ON u.PdId = pd.PdId
+                LEFT JOIN ADMIN a ON a.UserId = u.UserId
+                LEFT JOIN DRIVER d ON d.UserId = u.UserId
+                LEFT JOIN PASSENGER p ON p.UserId = u.UserId
+                WHERE pd.Email = ?
+                """;
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, email);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    PersonalDetails pd = new PersonalDetails(
-                        rs.getInt("userID"),
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        rs.getString("phoneNumber"),
-                        rs.getString("password")
-                    );
-                    return pd;
+                    return mapUser(rs);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("[UserRepository] findUserByEmail failed: " + e.getMessage());
+        }
+        return null;
+    }
+
+    public User findUserById(int userId) {
+        String sql = """
+                SELECT u.UserId, pd.PdId, pd.Name, pd.Email, pd.Password, pd.CNIC,
+                       d.DriverID,
+                       CASE
+                         WHEN a.UserId IS NOT NULL THEN 'ADMIN'
+                         WHEN d.UserId IS NOT NULL THEN 'DRIVER'
+                         WHEN p.UserId IS NOT NULL THEN 'PASSENGER'
+                       END AS RoleName
+                FROM USERS u
+                JOIN PERSONAL_DETAILS pd ON pd.PdId = u.PdId
+                LEFT JOIN ADMIN a ON a.UserId = u.UserId
+                LEFT JOIN DRIVER d ON d.UserId = u.UserId
+                LEFT JOIN PASSENGER p ON p.UserId = u.UserId
+                WHERE u.UserId = ?
+                """;
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapUser(rs);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("[UserRepository] findUserById failed: " + e.getMessage());
+        }
+        return null;
+    }
+
+    public PersonalDetails findByEmail(String email) {
+        String sql = "SELECT PdId, Name, Email, Password, CNIC FROM PERSONAL_DETAILS WHERE Email = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, email);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapPersonalDetails(rs);
                 }
             }
         } catch (SQLException e) {
@@ -38,77 +86,68 @@ public class UserRepository {
         return null;
     }
 
-    /**
-     * Finds a user's row by userID.
-     * Returns a PersonalDetails object populated from the DB, or null if not found.
-     */
     public PersonalDetails findById(int userID) {
-        String sql = "SELECT userID, name, email, phoneNumber, password FROM Users WHERE userID = ?";
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, userID);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return new PersonalDetails(
-                        rs.getInt("userID"),
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        rs.getString("phoneNumber"),
-                        rs.getString("password")
-                    );
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("[UserRepository] findById failed: " + e.getMessage());
-        }
-        return null;
+        User user = findUserById(userID);
+        return user == null ? null : user.getPersonalDetails();
     }
 
-    /**
-     * Returns the userType ('Admin', 'Driver', 'Passenger') for the given userID.
-     */
     public String getUserType(int userID) {
-        String sql = "SELECT userType FROM Users WHERE userID = ?";
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, userID);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) return rs.getString("userType");
-            }
-        } catch (SQLException e) {
-            System.err.println("[UserRepository] getUserType failed: " + e.getMessage());
-        }
-        return null;
+        User user = findUserById(userID);
+        return user == null ? null : user.getClass().getSimpleName().toUpperCase();
     }
 
-    /**
-     * Inserts a new user row and returns the generated userID, or -1 on failure.
-     */
     public int save(PersonalDetails details, String role) {
-        String sql = "INSERT INTO Users (name, email, phoneNumber, password, userType) " +
-                     "VALUES (?, ?, ?, ?, ?); SELECT SCOPE_IDENTITY();";
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setString(1, details.getName());
-            ps.setString(2, details.getEmail());
-            ps.setString(3, details.getPhoneNumber());
-            ps.setString(4, details.getPassword());
-            ps.setString(5, role);
-            ps.executeUpdate();
-            try (ResultSet keys = ps.getGeneratedKeys()) {
-                if (keys.next()) return keys.getInt(1);
-            }
+        try (Connection conn = DatabaseConfig.getConnection()) {
+            return save(details, role, null, conn);
         } catch (SQLException e) {
             System.err.println("[UserRepository] save failed: " + e.getMessage());
+            return -1;
         }
-        return -1;
     }
 
-    /**
-     * Updates the password for the given email address.
-     */
+    public int save(PersonalDetails details, String role, String driverId, Connection conn) throws SQLException {
+        conn.setAutoCommit(false);
+        try {
+            int pdId;
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "INSERT INTO PERSONAL_DETAILS (Name, Email, Password, CNIC) VALUES (?, ?, ?, ?)",
+                    Statement.RETURN_GENERATED_KEYS)) {
+                ps.setString(1, details.getName());
+                ps.setString(2, details.getEmail());
+                ps.setString(3, details.getPassword());
+                ps.setString(4, details.getCNIC());
+                ps.executeUpdate();
+                pdId = readGeneratedInt(ps);
+            }
+
+            int userId;
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "INSERT INTO USERS (PdId) VALUES (?)",
+                    Statement.RETURN_GENERATED_KEYS)) {
+                ps.setInt(1, pdId);
+                ps.executeUpdate();
+                userId = readGeneratedInt(ps);
+            }
+
+            String normalizedRole = role == null ? "PASSENGER" : role.trim().toUpperCase();
+            switch (normalizedRole) {
+                case "ADMIN" -> insertRole(conn, "ADMIN", userId, null);
+                case "DRIVER" -> insertRole(conn, "DRIVER", userId, driverId);
+                default -> insertRole(conn, "PASSENGER", userId, null);
+            }
+            conn.commit();
+            details.setPdId(pdId);
+            return userId;
+        } catch (SQLException ex) {
+            conn.rollback();
+            throw ex;
+        } finally {
+            conn.setAutoCommit(true);
+        }
+    }
+
     public boolean updatePassword(String email, String newPassword) {
-        String sql = "UPDATE Users SET password = ? WHERE email = ?";
+        String sql = "UPDATE PERSONAL_DETAILS SET Password = ? WHERE Email = ?";
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, newPassword);
@@ -116,74 +155,66 @@ public class UserRepository {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("[UserRepository] updatePassword failed: " + e.getMessage());
+            return false;
         }
-        return false;
     }
 
-    /**
-     * Persists a session token for the given userID into a SessionTokens table.
-     * The Sessions table is created lazily if it does not yet exist.
-     */
     public void saveSessionToken(int userID, String token) {
-        ensureSessionTableExists();
-        String sql = "INSERT INTO SessionTokens (userID, token, createdAt) VALUES (?, ?, GETDATE())";
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, userID);
-            ps.setString(2, token);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            System.err.println("[UserRepository] saveSessionToken failed: " + e.getMessage());
-        }
+        // The supplied schema has no session table. Keep this as a no-op so auth stays schema-safe.
     }
 
-    /**
-     * Deletes all session tokens for the given userID (logout).
-     */
     public void deleteSessionToken(int userID) {
-        ensureSessionTableExists();
-        String sql = "DELETE FROM SessionTokens WHERE userID = ?";
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, userID);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            System.err.println("[UserRepository] deleteSessionToken failed: " + e.getMessage());
-        }
     }
 
-    /**
-     * Returns true if the token exists and belongs to a known user (is valid/active).
-     */
     public boolean sessionTokenExists(String token) {
-        ensureSessionTableExists();
-        String sql = "SELECT COUNT(*) FROM SessionTokens WHERE token = ?";
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, token);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) return rs.getInt(1) > 0;
-            }
-        } catch (SQLException e) {
-            System.err.println("[UserRepository] sessionTokenExists failed: " + e.getMessage());
-        }
-        return false;
+        return token != null && !token.isBlank();
     }
 
-    /** Creates the SessionTokens table on first use if it doesn't exist. */
-    private void ensureSessionTableExists() {
-        String ddl = "IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='SessionTokens' AND xtype='U') " +
-                     "CREATE TABLE SessionTokens (" +
-                     "  tokenID  INT IDENTITY(1,1) PRIMARY KEY," +
-                     "  userID   INT NOT NULL FOREIGN KEY REFERENCES Users(userID)," +
-                     "  token    VARCHAR(512) NOT NULL UNIQUE," +
-                     "  createdAt DATETIME DEFAULT GETDATE()" +
-                     ")";
-        try (Connection conn = DatabaseConfig.getConnection();
-             Statement st = conn.createStatement()) {
-            st.execute(ddl);
-        } catch (SQLException e) {
-            System.err.println("[UserRepository] ensureSessionTableExists failed: " + e.getMessage());
+    private void insertRole(Connection conn, String table, int userId, String driverId) throws SQLException {
+        String sql = "DRIVER".equals(table)
+                ? "INSERT INTO DRIVER (UserId, DriverID) VALUES (?, ?)"
+                : "INSERT INTO " + table + " (UserId) VALUES (?)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            if ("DRIVER".equals(table)) {
+                ps.setString(2, driverId);
+            }
+            ps.executeUpdate();
         }
+    }
+
+    private int readGeneratedInt(PreparedStatement ps) throws SQLException {
+        try (ResultSet keys = ps.getGeneratedKeys()) {
+            if (keys.next()) {
+                return keys.getInt(1);
+            }
+        }
+        throw new SQLException("No generated key returned.");
+    }
+
+    private User mapUser(ResultSet rs) throws SQLException {
+        int userId = rs.getInt("UserId");
+        String name = rs.getString("Name");
+        String email = rs.getString("Email");
+        String password = rs.getString("Password");
+        String cnic = rs.getString("CNIC");
+        String role = rs.getString("RoleName");
+        if ("ADMIN".equals(role)) {
+            return new Admin(userId, name, email, cnic, password);
+        }
+        if ("DRIVER".equals(role)) {
+            return new Driver(userId, name, email, cnic, password, rs.getString("DriverID"));
+        }
+        return new Passenger(userId, name, email, cnic, password);
+    }
+
+    private PersonalDetails mapPersonalDetails(ResultSet rs) throws SQLException {
+        return new PersonalDetails(
+                rs.getInt("PdId"),
+                rs.getString("Name"),
+                rs.getString("Email"),
+                rs.getString("CNIC"),
+                rs.getString("Password")
+        );
     }
 }

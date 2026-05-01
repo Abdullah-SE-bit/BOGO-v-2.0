@@ -5,7 +5,9 @@ import org.BOGO.domain.user.*;
 public class Bus {
 
     private int busID;
-
+    private String busCompany;
+    private String registration;
+    private int registrationYear;
     private BusStatus busStatus;
 
     private int capacity;
@@ -19,10 +21,24 @@ public class Bus {
         busID = ID;
         capacity = cap;
         currentCapacity = cap;
+        busStatus = BusStatus.AVAILABLE;
+    }
+
+    public Bus(int busID, String busCompany, String registration, int registrationYear, BusStatus busStatus, int capacity) {
+        this.busID = busID;
+        this.busCompany = busCompany;
+        this.registration = registration;
+        this.registrationYear = registrationYear;
+        this.busStatus = busStatus;
+        this.capacity = capacity;
+        this.currentCapacity = capacity;
     }
 
     // ---------- setters ----------
     public void  setBusID(int ID)          { busID = ID; }
+    public void setBusCompany(String busCompany) { this.busCompany = busCompany; }
+    public void setRegistration(String registration) { this.registration = registration; }
+    public void setRegistrationYear(int registrationYear) { this.registrationYear = registrationYear; }
     public void  setBusStatus(BusStatus bs)      { busStatus = bs; }
     public void  setCapacity(int cap)       { capacity=cap; }
     public void  setCurrentCapacity(int cap) { currentCapacity = cap; }
@@ -30,6 +46,9 @@ public class Bus {
 
     // ---------- getters ----------
     public int getBusID()          { return busID; }
+    public String getBusCompany() { return busCompany; }
+    public String getRegistration() { return registration; }
+    public int getRegistrationYear() { return registrationYear; }
     public BusStatus getBusStatus()      { return busStatus; }
     public int getCapacity()       { return capacity; }
     public int getCurrentCapacity() { return currentCapacity; }
@@ -63,5 +82,7 @@ public class Bus {
         return returnValue;
     }
 
+    public void setRoute(Route route) {
+    }
 }
 // make function regarding allocation of bus to driver in the driver class

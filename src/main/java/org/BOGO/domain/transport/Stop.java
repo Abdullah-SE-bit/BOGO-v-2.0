@@ -24,6 +24,7 @@ public class Stop {
     public int  getStopID() { return stopID; }
     public ArrayList<Double> getConnectionsFair() { return connectionsFair; }
     public ArrayList<Integer> getConnectionRoutesId() { return connectionRoutesId; }
+    public boolean isActive() { return active; }
 
     public void initializeStop(int stopID, String stopName, Location location){
         this.stopID = stopID;
@@ -60,6 +61,13 @@ public class Stop {
     public String getStopName() { return stopName; }
     public ArrayList<Stop> getConnections() { return connections; }
     public Location getLocation() { return location; }
+    public void setStopID(int stopID) { this.stopID = stopID; }
+    public void setStopName(String stopName) { this.stopName = stopName; }
+    public void setActive(boolean active) { this.active = active; }
+    public void setLocation(Location location) { this.location = location; }
+    public void setConnections(ArrayList<Stop> connections) { this.connections = connections; }
+    public void setConnectionsFair(ArrayList<Double> connectionsFair) { this.connectionsFair = connectionsFair; }
+    public void setConnectionRoutesId(ArrayList<Integer> connectionRoutesId) { this.connectionRoutesId = connectionRoutesId; }
 
     //-----------------Displayer-------------
     public void displayStopDetails() {

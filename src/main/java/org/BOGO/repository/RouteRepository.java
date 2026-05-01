@@ -1,79 +1,126 @@
 package org.BOGO.repository;
 
 import org.BOGO.config.DatabaseConfig;
+import org.BOGO.domain.transport.Route;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * JDBC repository for Route-related DB operations.
- */
 public class RouteRepository {
-
-    /**
-     * Returns true if the given routeID exists in the Routes table.
-     */
     public boolean routeExists(int routeID) {
-        String sql = "SELECT COUNT(*) FROM Routes WHERE routeID = ?";
+        String sql = "SELECT COUNT(*) FROM ROUTEE WHERE RouteId = ?";
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, routeID);
             try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) return rs.getInt(1) > 0;
+                return rs.next() && rs.getInt(1) > 0;
             }
         } catch (SQLException e) {
             System.err.println("[RouteRepository] routeExists failed: " + e.getMessage());
+            return false;
         }
-        return false;
     }
 
-    /**
-     * Inserts a stop into a route in the RouteStops join table.
-     * sequenceNumber determines the stop's order on the route.
-     */
+    public List<Route> findAll() {
+        List<Route> routes = new ArrayList<>();
+        String sql = "SELECT RouteId, Active, Stop_IDs FROM ROUTEE ORDER BY RouteId";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Route route = new Route(rs.getInt("RouteId"));
+                route.setStopIDs(parseIds(rs.getString("Stop_IDs")));
+                routes.add(route);
+            }
+        } catch (SQLException e) {
+            System.err.println("[RouteRepository] findAll failed: " + e.getMessage());
+        }
+        return routes;
+    }
+
     public boolean addStopToRoute(int routeID, int stopID, double price, int sequenceNumber) {
-        String sql = "INSERT INTO RouteStops (routeID, stopID, price, sequenceNumber) VALUES (?, ?, ?, ?)";
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, routeID);
-            ps.setInt(2, stopID);
-            ps.setDouble(3, price);
-            ps.setInt(4, sequenceNumber);
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.err.println("[RouteRepository] addStopToRoute failed: " + e.getMessage());
+        Route route = findById(routeID);
+        if (route == null) {
+            return false;
         }
-        return false;
+        ArrayList<Integer> ids = route.getStopIDs();
+        if (!ids.contains(stopID)) {
+            ids.add(stopID);
+        }
+        return updateStopIds(routeID, ids);
     }
 
-    /**
-     * Removes a stop from a route in the RouteStops join table.
-     */
     public boolean removeStopFromRoute(int routeID, int stopID) {
-        String sql = "DELETE FROM RouteStops WHERE routeID = ? AND stopID = ?";
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, routeID);
-            ps.setInt(2, stopID);
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.err.println("[RouteRepository] removeStopFromRoute failed: " + e.getMessage());
+        Route route = findById(routeID);
+        if (route == null) {
+            return false;
         }
-        return false;
+        ArrayList<Integer> ids = route.getStopIDs();
+        ids.remove(Integer.valueOf(stopID));
+        return updateStopIds(routeID, ids);
     }
 
-    /**
-     * Assigns a bus to a route (UPDATE Buses SET routeID = ?).
-     */
     public boolean assignBusToRoute(int busID, int routeID) {
-        String sql = "UPDATE Buses SET routeID = ? WHERE busID = ?";
+        return routeExists(routeID);
+    }
+
+    public Route findById(int routeID) {
+        String sql = "SELECT RouteId, Stop_IDs FROM ROUTEE WHERE RouteId = ?";
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, routeID);
-            ps.setInt(2, busID);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Route route = new Route(rs.getInt("RouteId"));
+                    route.setStopIDs(parseIds(rs.getString("Stop_IDs")));
+                    return route;
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("[RouteRepository] findById failed: " + e.getMessage());
+        }
+        return null;
+    }
+
+    private boolean updateStopIds(int routeID, List<Integer> stopIds) {
+        String sql = "UPDATE ROUTEE SET Stop_IDs = ? WHERE RouteId = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, joinIds(stopIds));
+            ps.setInt(2, routeID);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.err.println("[RouteRepository] assignBusToRoute failed: " + e.getMessage());
+            System.err.println("[RouteRepository] updateStopIds failed: " + e.getMessage());
+            return false;
         }
-        return false;
+    }
+
+    static ArrayList<Integer> parseIds(String raw) {
+        ArrayList<Integer> ids = new ArrayList<>();
+        if (raw == null || raw.isBlank()) {
+            return ids;
+        }
+        for (String token : raw.split(",")) {
+            try {
+                ids.add(Integer.parseInt(token.trim()));
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        return ids;
+    }
+
+    static String joinIds(List<Integer> ids) {
+        StringBuilder builder = new StringBuilder();
+        for (Integer id : ids) {
+            if (id == null) {
+                continue;
+            }
+            if (!builder.isEmpty()) {
+                builder.append(',');
+            }
+            builder.append(id);
+        }
+        return builder.toString();
     }
 }

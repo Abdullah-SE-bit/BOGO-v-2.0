@@ -1,42 +1,90 @@
 package org.BOGO.domain.common;
 
-
 public class PersonalDetails {
-
-    private int userId;
+    private int pdId;
     private String name;
     private String email;
-    private String phoneNumber;
     private String password;
+    private String cnic;
 
-    // ---------- Constructors ----------
-    public PersonalDetails() {}
-
-    public PersonalDetails(int userId, String name, String email, String phoneNumber, String password) {
-        this.name        = name;
-        this.email       = email;
-        this.phoneNumber = phoneNumber;
-        this.password    = password;
-        this.userId = userId;
+    public PersonalDetails() {
     }
 
-    // ---------- Getters ----------
-    public int getUserId()    { return userId; }
-    public String getName()        { return name; }
-    public String getEmail()       { return email; }
-    public String getPhoneNumber() { return phoneNumber; }
-    public String getPassword()    { return password; }
+    public PersonalDetails(int pdId, String name, String email, String cnic, String password) {
+        this.pdId = pdId;
+        this.name = name;
+        this.email = email;
+        this.cnic = cnic;
+        this.password = password;
+    }
 
-    // ---------- Setters ----------
-    public void setUserId(int userId)               { this.userId        = userId; }
-    public void setName(String name)               { this.name        = name; }
-    public void setEmail(String email)             { this.email       = email; }
-    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
-    public void setPassword(String password)       { this.password    = password; }
+    public int getPdId() {
+        return pdId;
+    }
 
-    // ---------- Business Methods ----------
-    /** Validates that all required fields are non-null and properly formatted. */
+    public int getUserId() {
+        return pdId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getCNIC() {
+        return cnic;
+    }
+
+    public String getCnic() {
+        return cnic;
+    }
+
+    public String getPhoneNumber() {
+        return cnic;
+    }
+
+    public void setPdId(int pdId) {
+        this.pdId = pdId;
+    }
+
+    public void setUserId(int userId) {
+        this.pdId = userId;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setCNIC(String cnic) {
+        this.cnic = cnic;
+    }
+
+    public void setCnic(String cnic) {
+        this.cnic = cnic;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.cnic = phoneNumber;
+    }
+
     public boolean validate() {
-        return false;
+        return name != null && !name.isBlank()
+                && email != null && email.contains("@")
+                && password != null && !password.isBlank();
     }
 }

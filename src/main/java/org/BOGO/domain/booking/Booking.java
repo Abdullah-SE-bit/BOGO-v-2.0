@@ -38,6 +38,15 @@ public class Booking {
         this.cost = cost;
     }
 
+    public Booking(int bookingID, int passengerID, int busID, boolean active, double cost, LocalDateTime createdAt) {
+        this.bookingID = bookingID;
+        this.passengerID = passengerID;
+        this.busID = busID;
+        this.active = active;
+        this.cost = cost;
+        this.createdAt = createdAt;
+    }
+
     public Booking(Path p, Passenger passenger, Bus bus, LocalDateTime createdAt) {
         this.path = p;
         this.passenger = passenger;
@@ -48,10 +57,10 @@ public class Booking {
 
     // ---------- Business Methods ----------
     /** Marks this booking as COMPLETED and deactivates it. */
-    public void confirm() {}
+    public void confirm() { this.active = true; }
 
     /** Marks this booking as CANCELLED and deactivates it. */
-    public void cancel() {}
+    public void cancel() { this.active = false; }
 
 
     // Getters
@@ -60,6 +69,8 @@ public class Booking {
     public Path            getPath()          { return path; }
     public Passenger       getPassenger()     { return passenger; }
     public Bus             getBus()           { return bus; }
+    public int             getPassengerID()   { return passenger != null ? passenger.getUserID() : passengerID; }
+    public int             getBusID()         { return bus != null ? bus.getBusID() : busID; }
     public double          getCost()          { return cost; }
     public LocalDateTime   getCreatedAt()     { return createdAt; }
 

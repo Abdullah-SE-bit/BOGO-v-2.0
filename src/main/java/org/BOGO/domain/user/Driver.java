@@ -23,7 +23,7 @@ public class Driver extends User {
     private List<Notification> notifications = new ArrayList<>();
 
     // ---------- Constructors ----------
-    protected Driver(int userID, String name, String email, String phoneNumber,
+    public Driver(int userID, String name, String email, String phoneNumber,
                   String password, String licenseNumber) {
         super(userID, name, email, phoneNumber, password);
         this.licenseNumber = licenseNumber;

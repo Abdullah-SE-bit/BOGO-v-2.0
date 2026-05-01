@@ -27,37 +27,46 @@ public class BookingService {
      * driver's stop list.
      */
     public Booking createBooking(int PassengerID, int pStopID, int dStopID, Path path) {
-        // check if passenger exists(DB)
-        if(path==null /* || passenger doesnt exist or no fare available*/) {
+        if (bookingRepository == null) bookingRepository = new BookingRepository();
+        if (busRepository == null) busRepository = new BusRepository();
+        if(path==null || path.getStops().isEmpty()) {
             return null;
-        } else {
-            // retrieve passenger details and allocate the passenger 
-
-
-            //return new Booking();
         }
-        return null;
+        List<Bus> buses = busRepository.findAll();
+        if (buses.isEmpty()) {
+            return null;
+        }
+        Bus bus = buses.get(0);
+        int bookingId = bookingRepository.save(PassengerID, bus.getBusID(), path.getTotalCost());
+        if (bookingId < 0) {
+            return null;
+        }
+        Booking created = new Booking(path, new Passenger(PassengerID, "", "", "", ""), bus);
+        created.setBookingID(bookingId);
+        created.setActive(true);
+        return created;
     }
 
     /**
      * Validates that the pickup and destination stops exist and are active.
      */
     public boolean validateStops(Stop pickup, Stop destination) {
-        return false;
+        return pickup != null && destination != null && pickup.getStopID() != destination.getStopID();
     }
 
     /**
      * Returns all buses operating toward the given destination from the pickup stop.
      */
     public List<Bus> getAvailableBuses(Stop pickup, Stop destination) {
-        return null;
+        if (busRepository == null) busRepository = new BusRepository();
+        return busRepository.findAll();
     }
 
     /**
      * Generates a unique, one-use QR code string tied to the given booking.
      */
     public String generateQRCode(Booking booking) {
-        return null;
+        return booking == null ? null : "BOGO-" + booking.getBookingID() + "-" + System.currentTimeMillis();
     }
 
     /**
@@ -69,13 +78,15 @@ public class BookingService {
      * Returns all bookings currently in the system (for admin read).
      */
     public List<Booking> getAllBookings() {
-        return null;
+        if (bookingRepository == null) bookingRepository = new BookingRepository();
+        return bookingRepository.findAll();
     }
 
     /**
      * Returns details of a single booking by ID.
      */
     public Booking getBookingByID(int bookingID) {
-        return null;
+        if (bookingRepository == null) bookingRepository = new BookingRepository();
+        return bookingRepository.findById(bookingID);
     }
 }

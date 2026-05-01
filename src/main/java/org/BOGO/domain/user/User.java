@@ -15,6 +15,15 @@ public abstract class User {
         this.creds = new PersonalDetails(userID, name, email, phoneNumber, password);
     }
 
+    public int getUserID() { return userID; }
+    public int getUserId() { return userID; }
+    public PersonalDetails getCreds() { return creds; }
+    public PersonalDetails getPersonalDetails() { return creds; }
+    public String getName() { return creds == null ? null : creds.getName(); }
+    public String getEmail() { return creds == null ? null : creds.getEmail(); }
+    public String getPassword() { return creds == null ? null : creds.getPassword(); }
+    public String getCNIC() { return creds == null ? null : creds.getCNIC(); }
+
     // ---------- Setters ----------
     public void setUserID(int userID) { this.userID = userID; }
     public void setCreds(PersonalDetails creds) { this.creds = creds; }

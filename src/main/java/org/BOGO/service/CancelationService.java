@@ -16,7 +16,7 @@ public class CancelationService {
      * Triggers refund if e-wallet was used. Returns true on success.
      */
     public boolean cancelBooking(int bookingID, int passengerID) {
-        return false;
+        return bookingRepository.cancel(bookingID, passengerID);
     }
 
     /**
@@ -24,7 +24,7 @@ public class CancelationService {
      * (bus has not yet arrived at pickup stop).
      */
     public boolean checkEligibility(Booking booking) {
-        return false;
+        return booking != null && booking.isActive();
     }
 
     /**

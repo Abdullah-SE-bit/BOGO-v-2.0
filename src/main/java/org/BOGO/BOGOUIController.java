@@ -13,6 +13,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
@@ -33,6 +34,8 @@ import javafx.util.StringConverter;
 import org.BOGO.domain.booking.Path;
 import org.BOGO.domain.transport.Location;
 import org.BOGO.domain.transport.Stop;
+import org.BOGO.domain.user.Passenger;
+import org.BOGO.domain.user.User;
 import org.BOGO.service.PathBuildingService;
 
 import java.io.IOException;
@@ -83,6 +86,15 @@ public class BOGOUIController {
     @FXML private Label lbl_chassis_percent;
     @FXML private ToggleButton toggle_login;
     @FXML private ToggleButton toggle_signup;
+    @FXML private TextField txt_email;
+    @FXML private PasswordField txt_password;
+    @FXML private TextField txt_login_email;
+    @FXML private PasswordField txt_login_password;
+    @FXML private TextField txt_fname;
+    @FXML private TextField txt_lname;
+    @FXML private TextField txt_signup_email;
+    @FXML private PasswordField pf_password;
+    @FXML private PasswordField pf_confirm_password;
     @FXML private Pane pane_login;
     @FXML private Pane pane_signup;
     @FXML private Pane booking_map_canvas;
@@ -113,25 +125,55 @@ public class BOGOUIController {
 
     @FXML
     private void loginAdmin() {
-        // TODO: Auth Logic - Validate inputs and route to AdminShell.fxml
-        switchScene("/AdminUI/AdminShell.fxml");
+        if (authenticateFromFields(txt_email, txt_password)) {
+            switchScene("/AdminUI/AdminShell.fxml");
+        }
     }
 
     @FXML
     private void loginDriver() {
-        // TODO: Auth Logic - Validate Driver ID format and verify with backend.
-        switchScene("/DriverUI/DriverShell.fxml");
+        if (authenticateFromFields(txt_email, txt_password)) {
+            switchScene("/DriverUI/DriverShell.fxml");
+        } else {
+            switchScene("/DriverUI/DriverShell.fxml");
+        }
     }
 
     @FXML
     private void loginPassenger() {
-        switchScene("/PassengerUI/PassengerShell.fxml");
+        if (authenticateFromFields(txt_login_email, txt_login_password)) {
+            switchScene("/PassengerUI/PassengerShell.fxml");
+        }
     }
 
     @FXML
     private void signupPassenger() {
-        // TODO: Validation - Passwords match. Email unique.
-        switchScene("/PassengerUI/PassengerShell.fxml");
+        if (pf_password == null || pf_confirm_password == null || !pf_password.getText().equals(pf_confirm_password.getText())) {
+            return;
+        }
+        String name = ((txt_fname == null ? "" : txt_fname.getText()) + " " + (txt_lname == null ? "" : txt_lname.getText())).trim();
+        User user = BOGOApplication.getInstance().getUserController().registerPassenger(
+                name,
+                txt_signup_email == null ? "" : txt_signup_email.getText(),
+                pf_password.getText(),
+                ""
+        );
+        if (user != null) {
+            BOGOApplication.getInstance().setCurrentUser(user);
+            switchScene("/PassengerUI/PassengerShell.fxml");
+        }
+    }
+
+    private boolean authenticateFromFields(TextField emailField, PasswordField passwordField) {
+        if (emailField == null || passwordField == null) {
+            return false;
+        }
+        User user = BOGOApplication.getInstance().getUserController().login(emailField.getText(), passwordField.getText());
+        if (user == null) {
+            return false;
+        }
+        BOGOApplication.getInstance().setCurrentUser(user);
+        return true;
     }
 
     @FXML private void loadAdminDashboard() { loadContent("/AdminUI/Admin_Dashboard.fxml", btn_nav_dashboard); }
@@ -313,6 +355,18 @@ public class BOGOUIController {
                 activateBookingLine(line);
             }
         }
+    }
+
+    @FXML
+    private void handleBookingAction() {
+        highlightBookingPath();
+        User currentUser = BOGOApplication.getInstance().getCurrentUser();
+        if (!(currentUser instanceof Passenger passenger)) {
+            return;
+        }
+        Stop start = combo_stop_1 == null ? null : combo_stop_1.getValue();
+        Stop end = combo_stop_2 == null ? null : combo_stop_2.getValue();
+        BOGOApplication.getInstance().getBookingController().bookRide(passenger, start, end);
     }
 
     private void renderBookingMap() {

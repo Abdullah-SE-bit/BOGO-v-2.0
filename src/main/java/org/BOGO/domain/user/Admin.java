@@ -16,7 +16,7 @@ public class Admin extends User {
     private List<Notification> notifications = new ArrayList<>();
 
     // ---------- Constructors ----------
-    protected Admin(int userID, String name, String email, String phoneNumber, String password) {
+    public Admin(int userID, String name, String email, String phoneNumber, String password) {
         super(userID, name, email, phoneNumber, password);
         this.notifications = new ArrayList<>();
     }

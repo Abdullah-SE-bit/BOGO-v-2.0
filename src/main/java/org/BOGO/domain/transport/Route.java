@@ -24,6 +24,11 @@ public class Route {
 
     //-----------------Getter--------------------
     public int getRouteID() { return routeID; }
+    public ArrayList<Stop> getStops() { return stops; }
+    public ArrayList<Integer> getStopIDs() { return stopIDs; }
+    public void setRouteID(int routeID) { this.routeID = routeID; }
+    public void setStops(ArrayList<Stop> stops) { this.stops = stops; }
+    public void setStopIDs(ArrayList<Integer> stopIDs) { this.stopIDs = stopIDs; }
 
     //---------------Add Stops on Route-------------
     public void addStops(Stop stop) {

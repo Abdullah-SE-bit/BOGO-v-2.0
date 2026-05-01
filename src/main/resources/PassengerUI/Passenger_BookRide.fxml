@@ -21,6 +21,6 @@
         <ComboBox fx:id="combo_stop_1" editable="true" promptText="Pickup stop" maxWidth="Infinity"/>
         <ComboBox fx:id="combo_stop_2" editable="true" promptText="Destination stop" maxWidth="Infinity"/>
         <!-- TODO: BACKEND - Send Stop IDs; receive ETA and Price. -->
-        <Button fx:id="btn_confirm_booking" text="CONFIRM BOOKING" onAction="#highlightBookingPath" maxWidth="Infinity" styleClass="button-green"/>
+        <Button fx:id="btn_confirm_booking" text="CONFIRM BOOKING" onAction="#handleBookingAction" maxWidth="Infinity" styleClass="button-green"/>
     </VBox>
 </HBox>

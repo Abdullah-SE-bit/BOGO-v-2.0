@@ -18,9 +18,11 @@ public class Path {
     // ---------- Constructors ----------
     public Path() {}
 
+    public int getPathID() {return this.pathID;}
+
     public int getPathID(int pathID) {return this.pathID;}
 
-    public void setPathID(int pathID) {}
+    public void setPathID(int pathID) { this.pathID = pathID; }
 
     public ArrayList<Stop> getStops() {
         return stops;

@@ -6,7 +6,6 @@ import org.BOGO.domain.transport.Route;
 import org.BOGO.domain.user.Admin;
 import org.BOGO.domain.user.Driver;
 import org.BOGO.repository.BusRepository;
-import org.BOGO.repository.DriverRepository;
 import org.BOGO.repository.RouteRepository;
 import org.BOGO.repository.UserRepository;
 
@@ -43,7 +42,6 @@ import java.util.List;
 public class HandleDriverService {
 
     private final UserRepository    userRepository   = new UserRepository();
-    private final DriverRepository  driverRepository = new DriverRepository();
     private final BusRepository     busRepository    = new BusRepository();
     private final RouteRepository   routeRepository  = new RouteRepository();
 
@@ -57,34 +55,7 @@ public class HandleDriverService {
      * Admin.addDriver() is NOT called here because it only manages an in-memory list;
      * the UI/controller layer should pass the persisted Driver to it if needed.
      */
-    public void addDriver(Driver driver, Admin admin) {
-        if (driver == null || admin == null) {
-            System.out.println("[HandleDriverService] addDriver: null argument.");
-            return;
-        }
-
-        // Build PersonalDetails from the Driver domain object getters
-        // (Driver extends User, which wraps a PersonalDetails in 'creds' — not directly accessible,
-        //  so we read the fields from the domain object's public surface)
-        PersonalDetails pd = new PersonalDetails();
-        pd.setName(extractName(driver));
-        pd.setEmail(extractEmail(driver));
-        pd.setPhoneNumber(extractPhone(driver));
-        pd.setPassword(extractPassword(driver));
-
-        int userID = userRepository.save(pd, "Driver");
-        if (userID < 0) {
-            System.out.println("[HandleDriverService] addDriver: Users insert failed.");
-            return;
-        }
-
-        boolean saved = driverRepository.save(userID, driver.getLicenseNumber());
-        if (saved) {
-            System.out.println("[HandleDriverService] addDriver: Driver persisted with userID=" + userID);
-        } else {
-            System.out.println("[HandleDriverService] addDriver: Drivers insert failed for userID=" + userID);
-        }
-    }
+    public void addDriver(Driver driver, Admin admin) {}
 
     /**
      * Updates the profile (name, phoneNumber) and/or status of an existing driver in the DB.
@@ -93,22 +64,7 @@ public class HandleDriverService {
      * Calls driverRepository.updateProfile() for Users table,
      * and driverRepository.updateStatus() for the Drivers table.
      */
-    public void updateDriver(int driverID, Driver updatedData, Admin admin) {
-        if (updatedData == null || admin == null) {
-            System.out.println("[HandleDriverService] updateDriver: null argument.");
-            return;
-        }
-
-        boolean profileUpdated = driverRepository.updateProfile(
-            driverID,
-            extractName(updatedData),
-            extractPhone(updatedData)
-        );
-        boolean statusUpdated = driverRepository.updateStatus(driverID, updatedData.getStatus());
-
-        System.out.println("[HandleDriverService] updateDriver: profileUpdated=" + profileUpdated
-            + ", statusUpdated=" + statusUpdated + " for driverID=" + driverID);
-    }
+    public void updateDriver(int driverID, Driver updatedData, Admin admin) {}
 
     /**
      * Deactivates the specified driver:
@@ -119,29 +75,7 @@ public class HandleDriverService {
      * NOTE: Admin.removeDriver() removes from an in-memory list AND calls releaseBus()/goOffDuty().
      * This service method does the same domain calls but additionally writes to the DB. NOT a duplicate.
      */
-    public void deactivateDriver(int driverID, Admin admin, Driver driver) {
-        if (driver == null || admin == null) {
-            System.out.println("[HandleDriverService] deactivateDriver: null argument.");
-            return;
-        }
-
-        // Warn if currently on duty
-        if ("ON_DUTY".equals(driver.getStatus())) {
-            System.out.println("[HandleDriverService] WARNING: driverID=" + driverID
-                + " is currently ON_DUTY. Deactivating anyway.");
-        }
-
-        // In-memory cleanup via domain methods (Admin.removeDriver does the same in-memory)
-        driver.releaseBus();
-        driver.goOffDuty();
-
-        // Persist to DB
-        boolean updated = driverRepository.updateStatus(driverID, "INACTIVE");
-        // Also clear bus assignment in Buses table
-        busRepository.assignDriver(-1, driverID); // sets driverID = -1 (no driver)
-        System.out.println("[HandleDriverService] deactivateDriver: status persisted=" + updated
-            + " for driverID=" + driverID);
-    }
+    public void deactivateDriver(int driverID, Admin admin, Driver driver) {}
 
     /**
      * Convenience overload for callers who don't hold the Driver object in memory.
@@ -164,25 +98,7 @@ public class HandleDriverService {
      * NOTE: Driver.assignBus() handles in-memory only. This method complements it with DB persistence.
      */
     public void assignDriverToBus(Driver driver, Bus bus) {
-        if (driver == null || bus == null) {
-            System.out.println("[HandleDriverService] assignDriverToBus: null argument.");
-            return;
-        }
 
-        // Delegate to domain method for in-memory state
-        boolean assigned = driver.assignBus(bus);
-        if (!assigned) {
-            System.out.println("[HandleDriverService] assignDriverToBus: domain assignBus() returned false.");
-            return;
-        }
-
-        // Persist: write driverID onto the bus row
-        // (we use the bus's ID — Bus has no public getBusID(), so we rely on driver's allotedBus)
-        // Persist status to Drivers table
-        // NOTE: Bus has no public getBusID() getter — this would need one added.
-        // We use a workaround by calling updateStatus with ON_DUTY directly.
-        System.out.println("[HandleDriverService] assignDriverToBus: in-memory assignment done. "
-            + "Add getBusID() to Bus to enable DB persistence here.");
     }
 
     /**
@@ -191,43 +107,14 @@ public class HandleDriverService {
      *
      * NOTE: There is no assignDriverToRoute() in Driver or Admin — no conflict.
      */
-    public void assignDriverToRoute(Driver driver, Route route) {
-        if (driver == null || route == null) {
-            System.out.println("[HandleDriverService] assignDriverToRoute: null argument.");
-            return;
-        }
-
-        // Verify route exists in DB before assignment
-        if (!routeRepository.routeExists(route.getRouteID())) {
-            System.out.println("[HandleDriverService] assignDriverToRoute: routeID="
-                + route.getRouteID() + " not found in DB.");
-            return;
-        }
-
-        // In-memory: link the driver's bus to this route
-        if (driver.getAllotedBus() != null) {
-            driver.getAllotedBus().setRoute(route);
-        }
-
-        System.out.println("[HandleDriverService] assignDriverToRoute: driver linked to routeID="
-            + route.getRouteID() + " in memory. Add getBusID() to Bus to persist.");
-    }
+    public void assignDriverToRoute(Driver driver, Route route) {}
 
     /**
      * Returns all Driver shells whose DB status is INACTIVE (available for assignment).
      *
      * NOTE: No equivalent exists in Admin or Driver domain classes — no conflict.
      */
-    public List<Driver> getAvailableDrivers() {
-        List<Integer> ids = driverRepository.findAvailableDriverIds();
-        List<Driver> result = new ArrayList<>();
-        for (int id : ids) {
-            Driver shell = buildDriverShell(id);
-            if (shell != null) result.add(shell);
-        }
-        System.out.println("[HandleDriverService] getAvailableDrivers: found " + result.size());
-        return result;
-    }
+    public List<Driver> getAvailableDrivers() {return null;}
 
     // -------------------------------------------------------------------------
     // Private helpers

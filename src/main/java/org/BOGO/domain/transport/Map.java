@@ -38,6 +38,9 @@ public class Map {
     //------------Getter--------------------
     public Stop getStop(int i) {return stops.get(i);}
     public ArrayList<Stop> getStops() { return stops; }
+    public ArrayList<Route> getRoutes() { return routes; }
+    public void setStops(ArrayList<Stop> stops) { this.stops = stops; }
+    public void setRoutes(ArrayList<Route> routes) { this.routes = routes; }
     public Stop getStopById(int id) {
         HelpingFunctions h = new HelpingFunctions();
         int index = h.findStopIndex(stops, id);

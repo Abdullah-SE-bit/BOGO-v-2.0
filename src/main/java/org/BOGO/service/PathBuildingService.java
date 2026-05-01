@@ -10,9 +10,20 @@ public class PathBuildingService {
     private Map map;
 
     public PathBuildingService() {
+        this.map = new Map();
     }
     public PathBuildingService(Map map) {
         this.map = map;
+    }
+
+    public Map initializeFromDatabase() {
+        org.BOGO.repository.StopRepository stopRepository = new org.BOGO.repository.StopRepository();
+        org.BOGO.repository.RouteRepository routeRepository = new org.BOGO.repository.RouteRepository();
+        Map loaded = new Map();
+        loaded.setStops(new ArrayList<>(stopRepository.findAll()));
+        loaded.setRoutes(new ArrayList<>(routeRepository.findAll()));
+        this.map = loaded;
+        return loaded;
     }
 
     //------------Constructor-------------
@@ -20,7 +31,9 @@ public class PathBuildingService {
     //----------BFS Shortest Path----------
     public Path buildPath(int sourceID,int destinationID) {
 
-        //check if the stop ids exist if not then return null
+        if (map == null || map.getStops().isEmpty()) {
+            initializeFromDatabase();
+        }
 
         Stop source = map.getStopById(sourceID);
         Stop destination = map.getStopById(destinationID);
@@ -36,14 +49,13 @@ public class PathBuildingService {
 
         Queue<Stop> queue = new LinkedList<>();
 
-        boolean[] visited = new boolean[totalStops+1];
-
-        Stop[] parent = new Stop[totalStops+1];
+        java.util.Map<Integer, Boolean> visited = new HashMap<>();
+        java.util.Map<Integer, Stop> parent = new HashMap<>();
 
 
         queue.add(source);
 
-        visited[source.getStopID()] = true;
+        visited.put(source.getStopID(), true);
 
 
         while(!queue.isEmpty()) {
@@ -58,10 +70,10 @@ public class PathBuildingService {
 
                 Stop neighbor = current.getConnections().get(i);
 
-                if(!visited[neighbor.getStopID()]) {
+                if(!visited.getOrDefault(neighbor.getStopID(), false)) {
 
-                    visited[neighbor.getStopID()]=true;
-                    parent[neighbor.getStopID()]=current;
+                    visited.put(neighbor.getStopID(), true);
+                    parent.put(neighbor.getStopID(), current);
 
                     queue.add(neighbor);
                 }
@@ -75,7 +87,7 @@ public class PathBuildingService {
     private Path reconstructPath(
             Stop source,
             Stop destination,
-            Stop[] parent) {
+            java.util.Map<Integer, Stop> parent) {
 
         Path pathObject = new Path();
 
@@ -84,7 +96,7 @@ public class PathBuildingService {
 
 
         if(source!=destination &&
-                parent[destination.getStopID()] == null) {
+                parent.get(destination.getStopID()) == null) {
 
             System.out.println("No path exists");
 
@@ -100,7 +112,7 @@ public class PathBuildingService {
             stopPath.add(current);
 
             current =
-                    parent[current.getStopID()];
+                    parent.get(current.getStopID());
         }
 
 
@@ -203,14 +215,17 @@ public class PathBuildingService {
      * Builds the simplest direct path between two stops on a single route.
      */
     public Path calculatePath(Stop pickup, Stop destination) {
-        return null;
+        if (pickup == null || destination == null) {
+            return new Path();
+        }
+        return buildPath(pickup.getStopID(), destination.getStopID());
     }
 
     /**
      * Applies multi-leg pathfinding to build an optimal multi-bus transfer path.
      */
     public Path calculateMultiLegPath(Stop pickup, Stop destination) {
-        return null;
+        return calculatePath(pickup, destination);
     }
 
     /**
@@ -225,13 +240,35 @@ public class PathBuildingService {
      * Returns all stops within the given path where a bus transfer is required.
      */
     public List<Stop> getTransferPoints(Path path) {
-        return null;
+        ArrayList<Stop> transfers = new ArrayList<>();
+        if (path == null || path.getStops().size() < 3) {
+            return transfers;
+        }
+        int previousRouteId = -1;
+        for (int i = 0; i < path.getStops().size() - 1; i++) {
+            Stop from = path.getStops().get(i);
+            Stop to = path.getStops().get(i + 1);
+            for (int j = 0; j < from.getConnections().size(); j++) {
+                if (from.getConnections().get(j).getStopID() == to.getStopID()) {
+                    int routeId = from.getConnectionRoutesId().get(j);
+                    if (previousRouteId != -1 && previousRouteId != routeId) {
+                        transfers.add(from);
+                    }
+                    previousRouteId = routeId;
+                    break;
+                }
+            }
+        }
+        return transfers;
     }
 
     /**
      * Estimates total journey time in minutes, including expected transfer waits.
      */
     public int estimateJourneyTime(Path path) {
-        return 0;
+        if (path == null || path.getStops().isEmpty()) {
+            return 0;
+        }
+        return Math.max(0, path.getStops().size() - 1) * 7 + getTransferPoints(path).size() * 10;
     }
 }

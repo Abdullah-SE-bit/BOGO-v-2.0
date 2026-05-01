@@ -15,7 +15,7 @@ public class Passenger extends User {
     private List<Booking> bookings = new ArrayList<>();
 
     // ---------- Constructors ----------
-    protected Passenger(int userID, String name, String email, String phoneNumber, String password) {
+    public Passenger(int userID, String name, String email, String phoneNumber, String password) {
         super(userID, name, email, phoneNumber, password);
         this.bookings = new ArrayList<>();
     }

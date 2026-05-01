@@ -1,6 +1,5 @@
 package org.BOGO.service;
 
-import org.BOGO.domain.common.PersonalDetails;
 import org.BOGO.domain.user.User;
 import org.BOGO.repository.UserRepository;
 
@@ -37,25 +36,29 @@ public class AuthService {
      * NOTE: passwords are stored in plain text for this stage.
      * Replace the equality check with a bcrypt/hash comparison when hashing is added.
      */
-    public PersonalDetails login(String email, String password) {
+    public User authenticate(String email, String password) {
         if (email == null || password == null) return null;
 
-        PersonalDetails pd = userRepository.findByEmail(email.trim().toLowerCase());
-        if (pd == null) {
+        User user = userRepository.findUserByEmail(email.trim().toLowerCase());
+        if (user == null) {
             System.out.println("[AuthService] login: no user found for email=" + email);
             return null;
         }
 
-        if (!pd.getPassword().equals(password)) {
+        if (!user.getPassword().equals(password)) {
             System.out.println("[AuthService] login: wrong password for email=" + email);
             return null;
         }
 
-        // Generate and persist a session token for this user
         String token = UUID.randomUUID().toString();
-        userRepository.saveSessionToken(pd.getUserId(), token);
-        System.out.println("[AuthService] login: success for userID=" + pd.getUserId());
-        return pd;
+        userRepository.saveSessionToken(user.getUserID(), token);
+        System.out.println("[AuthService] login: success for userID=" + user.getUserID());
+        return user;
+    }
+
+    public org.BOGO.domain.common.PersonalDetails login(String email, String password) {
+        User user = authenticate(email, password);
+        return user == null ? null : user.getPersonalDetails();
     }
 
     /**
@@ -74,11 +77,10 @@ public class AuthService {
      * Writes the Users row via userRepository.save() and returns the
      * persisted PersonalDetails (with the generated userID set), or null on failure.
      */
-    public PersonalDetails register(PersonalDetails details, String role) {
+    public User register(org.BOGO.domain.common.PersonalDetails details, String role) {
         if (details == null || role == null || role.isBlank()) return null;
 
-        // Guard: don't register the same email twice
-        PersonalDetails existing = userRepository.findByEmail(details.getEmail());
+        org.BOGO.domain.common.PersonalDetails existing = userRepository.findByEmail(details.getEmail());
         if (existing != null) {
             System.out.println("[AuthService] register: email already in use -> " + details.getEmail());
             return null;
@@ -92,7 +94,7 @@ public class AuthService {
 
         details.setUserId(generatedID);
         System.out.println("[AuthService] register: new user created, userID=" + generatedID);
-        return details;
+        return userRepository.findUserById(generatedID);
     }
 
     /**
@@ -116,7 +118,7 @@ public class AuthService {
     public void resetPassword(String email) {
         if (email == null || email.isBlank()) return;
 
-        PersonalDetails pd = userRepository.findByEmail(email.trim().toLowerCase());
+        org.BOGO.domain.common.PersonalDetails pd = userRepository.findByEmail(email.trim().toLowerCase());
         if (pd == null) {
             System.out.println("[AuthService] resetPassword: no user found for email=" + email);
             return;

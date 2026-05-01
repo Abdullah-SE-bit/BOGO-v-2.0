@@ -21,6 +21,14 @@ public class Location {
         return longitude;
     }
 
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
     //----------Displayer-----------
     public void displayLocation() {
         System.out.println("Latitude: " + latitude);
