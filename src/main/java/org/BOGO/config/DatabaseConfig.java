@@ -4,13 +4,16 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-
+/**
+ * Database configuration for MS SQL Server connection.
+ */
 public class DatabaseConfig {
-        private static final String URL = "jdbc:sqlserver://DESKTOP-M0688UR\\SQLEXPRESS;databaseName=bogo;encrypt=true;trustServerCertificate=true;";
-        private static final String USER = "BOGO";
-        private static final String PASSWORD = "ABD-3740-2006";
+    
+    private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=BOGO;encrypt=false;trustServerCertificate=true;";
+    private static final String USER = "sa";
+    private static final String PASSWORD = "YourStrong@Pass123";
 
-        public static Connection getConnection() throws SQLException, SQLException {
-            return DriverManager.getConnection(URL, USER, PASSWORD);
-        }
+    public static Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(URL, USER, PASSWORD);
+    }
 }
