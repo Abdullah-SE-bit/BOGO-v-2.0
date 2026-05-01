@@ -34,18 +34,15 @@ public class Passenger extends User {
         boolean added = bus.addPassenger();
         if (!added) return null;  // bus is full
 
-        Booking booking = new Booking();
-        booking.setPassenger(this);
-        booking.setPath(path);
-        booking.setBus(bus);
-        booking.setPaymentMethod(paymentMethod);
-        booking.setStatus("PENDING");
-        booking.setCreatedAt(LocalDateTime.now());
-        booking.setActive(true);
-        booking.generateQrCode();
+//        Booking booking = new Booking();
+//        booking.setPassenger(this);
+//        booking.setPath(path);
+//        booking.setBus(bus);
+//        booking.setCreatedAt(LocalDateTime.now());
+//        booking.setActive(true);
 
-        this.bookings.add(booking);
-        return booking;
+//        this.bookings.add(booking);
+        return null;
     }
     public boolean cancelBooking(Booking booking) {
         if (booking == null || !bookings.contains(booking)) return false;
@@ -63,13 +60,13 @@ public class Passenger extends User {
         return active;
     }
     public List<Booking> getBookingHistory() {
-        List<Booking> history = new ArrayList<>();
-        for (Booking b : bookings) {
-            if ("COMPLETED".equals(b.getStatus()) || "CANCELLED".equals(b.getStatus())) {
-                history.add(b);
-            }
-        }
-        return history;
+//        List<Booking> history = new ArrayList<>();
+//        for (Booking b : bookings) {
+//            if ("COMPLETED".equals(b.getStatus()) || "CANCELLED".equals(b.getStatus())) {
+//                history.add(b);
+//            }
+//        }
+        return null;
     }
     public boolean hasActiveBooking() {
         for (Booking b : bookings) {

@@ -4,12 +4,11 @@ import org.BOGO.domain.transport.Location;
 import org.BOGO.domain.transport.Route;
 import org.BOGO.domain.transport.Stop;
 import org.BOGO.repository.RouteRepository;
-import org.BOGO.repository.StopRepository;
+
 import java.util.List;
 
 public class ViewMapService {
 
-    private final StopRepository  stopRepository = new StopRepository();
     private final RouteRepository routeRepository = new RouteRepository();
 
 

@@ -6,8 +6,6 @@ public class Bus {
 
     private int busID;
 
-    private Route route;
-
     private BusStatus busStatus;
 
     private int capacity;
@@ -25,11 +23,17 @@ public class Bus {
 
     // ---------- setters ----------
     public void  setBusID(int ID)          { busID = ID; }
-    public void  setRoute(Route r)          { route = r; }
     public void  setBusStatus(BusStatus bs)      { busStatus = bs; }
     public void  setCapacity(int cap)       { capacity=cap; }
     public void  setCurrentCapacity(int cap) { currentCapacity = cap; }
     public void  setLocation(Location lt)       { location = lt; }
+
+    // ---------- getters ----------
+    public int getBusID()          { return busID; }
+    public BusStatus getBusStatus()      { return busStatus; }
+    public int getCapacity()       { return capacity; }
+    public int getCurrentCapacity() { return currentCapacity; }
+    public Location getLocation()       { return location; }
 
     public boolean allocateDriver(Driver d) {
         boolean returnValue = true;

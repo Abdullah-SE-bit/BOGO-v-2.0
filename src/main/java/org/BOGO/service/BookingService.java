@@ -7,13 +7,15 @@ import org.BOGO.domain.transport.Stop;
 import org.BOGO.domain.user.Passenger;
 import org.BOGO.repository.BookingRepository;
 import org.BOGO.repository.BusRepository;
+import org.BOGO.repository.UserRepository;
+
 import java.util.List;
 
 public class BookingService {
 
     private BookingRepository bookingRepository;
     private BusRepository     busRepository;
-
+    private UserRepository userRepository;
     private Booking booking;
 
 
@@ -24,7 +26,16 @@ public class BookingService {
      * path, bus, and payment method. Also generates a QR code and updates the
      * driver's stop list.
      */
-    public Booking createBooking(int PassengerID, int pStopID, int dStopID, String paymentMethod) {
+    public Booking createBooking(int PassengerID, int pStopID, int dStopID, Path path) {
+        // check if passenger exists(DB)
+        if(path==null /* || passenger doesnt exist or no fare available*/) {
+            return null;
+        } else {
+            // retrieve passenger details and allocate the passenger 
+
+
+            //return new Booking();
+        }
         return null;
     }
 

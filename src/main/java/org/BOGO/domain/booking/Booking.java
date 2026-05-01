@@ -10,16 +10,41 @@ public class Booking {
     private boolean active;
 
     private Path path;
+    private int pathID;
+
     private Passenger passenger;
+    private int passengerID;
+
     private Bus bus;
+    private int busID;
+
     private double cost;
-    private String status;
-    private String paymentMethod;  // EWALLET | CASH
-    private String qrCode;
 
     private LocalDateTime createdAt;
 
+    public Booking(Path p, Passenger passenger, Bus bus) {
+        this.createdAt = LocalDateTime.now();
+        this.path = p;
+        this.passenger = passenger;
+        this.bus = bus;
+        this.cost = path.getTotalCost();
+    }
 
+    public Booking(int pid, int Pid, int bid, double cost) {
+        this.createdAt = LocalDateTime.now();
+        this.pathID = pid;
+        this.passengerID = Pid;
+        this.busID = bid;
+        this.cost = cost;
+    }
+
+    public Booking(Path p, Passenger passenger, Bus bus, LocalDateTime createdAt) {
+        this.path = p;
+        this.passenger = passenger;
+        this.bus = bus;
+        this.cost = path.getTotalCost();
+        this.createdAt = createdAt;
+    }
 
     // ---------- Business Methods ----------
     /** Marks this booking as COMPLETED and deactivates it. */
@@ -28,8 +53,6 @@ public class Booking {
     /** Marks this booking as CANCELLED and deactivates it. */
     public void cancel() {}
 
-    /** Generates and assigns a unique QR code string for this booking. */
-    public void generateQrCode() {}
 
     // Getters
     public int             getBookingID()     { return bookingID; }
@@ -38,9 +61,6 @@ public class Booking {
     public Passenger       getPassenger()     { return passenger; }
     public Bus             getBus()           { return bus; }
     public double          getCost()          { return cost; }
-    public String          getStatus()        { return status; }
-    public String          getPaymentMethod() { return paymentMethod; }
-    public String          getQrCode()        { return qrCode; }
     public LocalDateTime   getCreatedAt()     { return createdAt; }
 
     // Setters
@@ -50,8 +70,5 @@ public class Booking {
     public void setPassenger(Passenger passenger)     { this.passenger     = passenger; }
     public void setBus(Bus bus)                       { this.bus           = bus; }
     public void setCost(double cost)                  { this.cost          = cost; }
-    public void setPaymentMethod(String method)       { this.paymentMethod = method; }
-    public void setQrCode(String qrCode)              { this.qrCode        = qrCode; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt     = createdAt; }
-    public void setStatus(String status)              { this.status        = status; }
 }

@@ -57,7 +57,6 @@ public class Admin extends User {
     }
     public boolean cancelBooking(Booking booking) {
         if (booking == null) return false;
-        booking.setStatus("CANCELLED");
         return true;
     }
     public List<Booking> viewAllBookings(List<Booking> bookingList) {

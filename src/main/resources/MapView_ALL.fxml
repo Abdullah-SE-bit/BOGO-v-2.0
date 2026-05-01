@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+
+<StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" styleClass="map-placeholder">
+    <!-- STREET VIEW LIBRARY PLACEHOLDER - INSERT MAP COMPONENT HERE -->
+    <AnchorPane>
+        <Label text="MAP VIEW PLACEHOLDER" styleClass="header-text" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
+               AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" alignment="CENTER"/>
+    </AnchorPane>
+</StackPane>

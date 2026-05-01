@@ -4,12 +4,11 @@ import org.BOGO.domain.transport.Route;
 import org.BOGO.domain.transport.Stop;
 import org.BOGO.domain.user.Admin;
 import org.BOGO.repository.RouteRepository;
-import org.BOGO.repository.StopRepository;
+
 import java.util.List;
 
 public class ManageStopsService {
 
-    private final StopRepository  stopRepository = new StopRepository();
     private final RouteRepository routeRepository = new RouteRepository();
 
 

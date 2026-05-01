@@ -59,6 +59,7 @@ public class Stop {
     //------------------Getter---------------
     public String getStopName() { return stopName; }
     public ArrayList<Stop> getConnections() { return connections; }
+    public Location getLocation() { return location; }
 
     //-----------------Displayer-------------
     public void displayStopDetails() {
@@ -74,6 +75,11 @@ public class Stop {
                     connectionsFair.get(i-1) + " And Its follow Route " + connectionRoutesId.get(i-1));
         }
 
+    }
+
+    @Override
+    public String toString() {
+        return stopName;
     }
 
 

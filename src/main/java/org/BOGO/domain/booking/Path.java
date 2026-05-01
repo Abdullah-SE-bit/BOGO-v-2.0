@@ -7,6 +7,8 @@ import java.util.List;
 
 public class Path {
 
+    private int pathID;
+
     private ArrayList<Stop> stops = new ArrayList<>();
 
     private ArrayList<Route> routes = new ArrayList<>();
@@ -15,6 +17,10 @@ public class Path {
 
     // ---------- Constructors ----------
     public Path() {}
+
+    public int getPathID(int pathID) {return this.pathID;}
+
+    public void setPathID(int pathID) {}
 
     public ArrayList<Stop> getStops() {
         return stops;

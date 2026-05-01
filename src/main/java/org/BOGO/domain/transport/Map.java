@@ -5,7 +5,10 @@ import java.util.ArrayList;
 public class Map {
 
     private ArrayList<Stop> stops = new ArrayList<>();
+    private ArrayList<Integer> stopIDs = new ArrayList<>();
+
     private ArrayList<Route> routes = new ArrayList<>();
+    private ArrayList<Integer> routeIDs = new ArrayList<>();
 
     //----------Constructor------------
     public Map() {}
@@ -43,6 +46,7 @@ public class Map {
         }
         return stops.get(index);
     }
+
     public Route getRouteById(int id) {
         HelpingFunctions h = new HelpingFunctions();
         int index = h.findRouteIndex(routes, id);
@@ -103,6 +107,5 @@ public class Map {
             stops.get(i).displayStopDetails();
         }
     }
-
 
 }

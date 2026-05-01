@@ -13,6 +13,14 @@ public class Location {
         this.longitude = longitude;
     }
 
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
     //----------Displayer-----------
     public void displayLocation() {
         System.out.println("Latitude: " + latitude);

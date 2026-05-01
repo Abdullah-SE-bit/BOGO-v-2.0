@@ -3,8 +3,6 @@ package org.BOGO.service;
 import org.BOGO.domain.booking.Path;
 import org.BOGO.domain.transport.*;
 import org.BOGO.domain.transport.Map;
-import org.BOGO.repository.RouteRepository;
-import org.BOGO.repository.StopRepository;
 
 import java.util.*;
 
@@ -14,12 +12,15 @@ public class PathBuildingService {
     public PathBuildingService() {
     }
     public PathBuildingService(Map map) {
+        this.map = map;
     }
 
     //------------Constructor-------------
 
     //----------BFS Shortest Path----------
     public Path buildPath(int sourceID,int destinationID) {
+
+        //check if the stop ids exist if not then return null
 
         Stop source = map.getStopById(sourceID);
         Stop destination = map.getStopById(destinationID);

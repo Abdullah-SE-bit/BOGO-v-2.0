@@ -8,12 +8,14 @@ public class Route {
 
     private int routeID;
     private ArrayList<Stop> stops = new ArrayList<>();
+    private ArrayList<Integer> stopIDs = new ArrayList<>();
 
     // ---------- Constructors ----------
     public Route() {}
     public Route(int routeID) {
         this.routeID = routeID;
     }
+
 
     //----------------Initialize Route-------------
     public void initializeRoute(int routeID) {
