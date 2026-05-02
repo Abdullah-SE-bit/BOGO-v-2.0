@@ -11,7 +11,7 @@ public class DatabaseConfig {
     
     private static final String URL = "jdbc:sqlserver://DESKTOP-M0688UR\\SQLEXPRESS;databaseName=bogo;encrypt=false;trustServerCertificate=true;";
     private static final String USER = "BOGO";
-    private static final String PASSWORD = "ABC-3740-2006";
+    private static final String PASSWORD = "ABD-3740-2006";
 
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL, USER, PASSWORD);

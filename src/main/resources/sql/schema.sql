@@ -137,3 +137,173 @@ CREATE TABLE NOTIFICATIONS (
                                CreatedAt DATETIME DEFAULT GETDATE(),
                                CONSTRAINT FK_NOTIF_USER FOREIGN KEY (RecipientUserId) REFERENCES USERS(UserId)
 );
+
+
+
+BEGIN TRANSACTION;
+
+BEGIN TRY
+    DECLARE @AdminPdId INT, @AdminUserId INT;
+
+    -- 1. Insert Core Identity
+    -- Updated Email to satisfy the '%_@gmail.com' constraint
+INSERT INTO PERSONAL_DETAILS ([Name], Email, [Password], CNIC)
+VALUES ('Super Admin', 'bogo.admin@gmail.com', 'AdminPass123', '1234500000000');
+
+SET @AdminPdId = SCOPE_IDENTITY();
+
+    -- 2. Insert into System Users table
+    IF @AdminPdId IS NOT NULL
+BEGIN
+INSERT INTO USERS (PdId)
+VALUES (@AdminPdId);
+SET @AdminUserId = SCOPE_IDENTITY();
+END
+
+    -- 3. Assign the Admin Role
+    IF @AdminUserId IS NOT NULL
+BEGIN
+INSERT INTO ADMIN (UserId)
+VALUES (@AdminUserId);
+
+COMMIT TRANSACTION;
+PRINT 'Admin successfully inserted with Gmail address.';
+END
+ELSE
+BEGIN
+ROLLBACK TRANSACTION;
+PRINT 'Error: UserId was not generated.';
+END
+
+END TRY
+BEGIN CATCH
+IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+    PRINT 'Error Message: ' + ERROR_MESSAGE();
+END CATCH;
+
+
+BEGIN TRANSACTION;
+
+BEGIN TRY
+    DECLARE @PassengerPdId INT, @PassengerUserId INT;
+
+    -- 1. Insert Core Identity (Satisfies '%_@gmail.com' constraint)
+INSERT INTO PERSONAL_DETAILS ([Name], Email, [Password], CNIC)
+VALUES ('John Passenger', 'john.bogo@gmail.com', 'SecurePass123', '4210112345678');
+
+SET @PassengerPdId = SCOPE_IDENTITY();
+
+    -- 2. Insert into System Users table
+    IF @PassengerPdId IS NOT NULL
+BEGIN
+INSERT INTO USERS (PdId)
+VALUES (@PassengerPdId);
+SET @PassengerUserId = SCOPE_IDENTITY();
+END
+
+    -- 3. Assign the Passenger Role
+    IF @PassengerUserId IS NOT NULL
+BEGIN
+INSERT INTO PASSENGER (UserId)
+VALUES (@PassengerUserId);
+
+COMMIT TRANSACTION;
+PRINT 'Passenger successfully inserted.';
+END
+ELSE
+BEGIN
+ROLLBACK TRANSACTION;
+PRINT 'Error: Passenger UserId was not generated.';
+END
+
+END TRY
+BEGIN CATCH
+IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+    PRINT 'Error Message: ' + ERROR_MESSAGE();
+END CATCH;
+
+
+
+BEGIN TRANSACTION;
+
+BEGIN TRY
+    DECLARE @DriverPdId INT, @DriverUserId INT;
+
+    -- 1. Insert Core Identity
+INSERT INTO PERSONAL_DETAILS ([Name], Email, [Password], CNIC)
+VALUES ('Fast Driver', 'driver.bogo@gmail.com', 'DriveSafe2024', '4210198765432');
+
+SET @DriverPdId = SCOPE_IDENTITY();
+
+    -- 2. Insert into System Users table
+    IF @DriverPdId IS NOT NULL
+BEGIN
+INSERT INTO USERS (PdId)
+VALUES (@DriverPdId);
+SET @DriverUserId = SCOPE_IDENTITY();
+END
+
+    -- 3. Assign the Driver Role (Requires the 13-character DriverID)
+    IF @DriverUserId IS NOT NULL
+BEGIN
+INSERT INTO DRIVER (UserId, DriverID)
+VALUES (@DriverUserId, 'DRI-5566-2024');
+
+COMMIT TRANSACTION;
+PRINT 'Driver successfully inserted.';
+END
+ELSE
+BEGIN
+ROLLBACK TRANSACTION;
+PRINT 'Error: Driver UserId was not generated.';
+END
+
+END TRY
+BEGIN CATCH
+IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+    PRINT 'Error Message: ' + ERROR_MESSAGE();
+END CATCH;
+
+SELECT
+    SCHEMA_NAME(t.schema_id) AS SchemaName,
+    t.name AS TableName,
+    col.name AS ColumnName,
+    chk.name AS ConstraintName,
+    'CHECK' AS ConstraintType,
+    chk.definition AS ConstraintDefinition
+FROM sys.check_constraints chk
+         INNER JOIN sys.tables t ON chk.parent_object_id = t.object_id
+         LEFT JOIN sys.columns col ON chk.parent_object_id = col.object_id AND chk.parent_column_id = col.column_id
+WHERE t.name IN ('PERSONAL_DETAILS', 'USERS', 'ADMIN', 'PASSENGER', 'DRIVER', 'LOCATIONN', 'STOPS', 'ROUTEE', 'BUS', 'TRIP', 'BOOKING', 'ALERTS', 'RESOLUTIONS', 'NOTIFICATIONS')
+
+UNION ALL
+
+SELECT
+    SCHEMA_NAME(t.schema_id) AS SchemaName,
+    t.name AS TableName,
+    col.name AS ColumnName,
+    def.name AS ConstraintName,
+    'DEFAULT' AS ConstraintType,
+    def.definition AS ConstraintDefinition
+FROM sys.default_constraints def
+         INNER JOIN sys.tables t ON def.parent_object_id = t.object_id
+         LEFT JOIN sys.columns col ON def.parent_object_id = col.object_id AND def.parent_column_id = col.column_id
+WHERE t.name IN ('PERSONAL_DETAILS', 'USERS', 'ADMIN', 'PASSENGER', 'DRIVER', 'LOCATIONN', 'STOPS', 'ROUTEE', 'BUS', 'TRIP', 'BOOKING', 'ALERTS', 'RESOLUTIONS', 'NOTIFICATIONS')
+
+UNION ALL
+
+SELECT
+    SCHEMA_NAME(t.schema_id) AS SchemaName,
+    t.name AS TableName,
+    col.name AS ColumnName,
+    kc.name AS ConstraintName,
+    'UNIQUE' AS ConstraintType,
+    'N/A' AS ConstraintDefinition
+FROM sys.key_constraints kc
+         INNER JOIN sys.tables t ON kc.parent_object_id = t.object_id
+         INNER JOIN sys.index_columns ic ON kc.parent_object_id = ic.object_id AND kc.unique_index_id = ic.index_id
+         INNER JOIN sys.columns col ON ic.object_id = col.object_id AND ic.column_id = col.column_id
+WHERE kc.type = 'UQ'
+  AND t.name IN ('PERSONAL_DETAILS', 'USERS', 'ADMIN', 'PASSENGER', 'DRIVER', 'LOCATIONN', 'STOPS', 'ROUTEE', 'BUS', 'TRIP', 'BOOKING', 'ALERTS', 'RESOLUTIONS', 'NOTIFICATIONS')
+
+ORDER BY TableName, ConstraintType, ColumnName;
