@@ -70,6 +70,28 @@ public class UserRepository {
         return null;
     }
 
+    /** Looks up a driver by their alphanumeric DriverID (e.g. "DR-001"), used for driver login. */
+    public User findUserByDriverId(String driverId) {
+        String sql = """
+                SELECT u.UserId, pd.Name, pd.Email, pd.Password, pd.CNIC,
+                       d.DriverID, 'DRIVER' AS RoleName
+                FROM DRIVER d
+                JOIN USERS u         ON u.UserId  = d.UserId
+                JOIN PERSONAL_DETAILS pd ON pd.PdId = u.PdId
+                WHERE d.DriverID = ?
+                """;
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, driverId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return mapUser(rs);
+            }
+        } catch (SQLException e) {
+            System.err.println("[UserRepository] findUserByDriverId failed: " + e.getMessage());
+        }
+        return null;
+    }
+
     public PersonalDetails findByEmail(String email) {
         String sql = "SELECT PdId, Name, Email, Password, CNIC FROM PERSONAL_DETAILS WHERE Email = ?";
         try (Connection conn = DatabaseConfig.getConnection();

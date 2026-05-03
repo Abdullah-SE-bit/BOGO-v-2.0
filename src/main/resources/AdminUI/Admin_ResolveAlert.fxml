@@ -13,13 +13,13 @@
         <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
         <Label text="Active Alerts" styleClass="subheader-text"/>
         <ListView fx:id="list_active_alerts" styleClass="alert-list" VBox.vgrow="ALWAYS"/>
-        <!-- TODO: Backend Resource Check. If (resourceAvailable) { show "Resolved" fade-out toast, remove from list } else { show Error } -->
-        <Button fx:id="btn_resolve" text="RESOLVE SELECTED" onAction="#showResolutionDialog" styleClass="button-green"/>
+        <!-- Clicking RESOLVE SELECTED marks the selected alert RESOLVED in DB -->
+        <Button fx:id="btn_resolve" text="RESOLVE SELECTED" onAction="#handleResolveAlert" styleClass="button-green"/>
     </VBox>
     <VBox fx:id="pane_resolution_dialog" visible="false" alignment="CENTER" maxWidth="360" spacing="16" styleClass="neon-card">
         <padding><Insets top="28" right="28" bottom="28" left="28"/></padding>
-        <Label text="Assign Resource" styleClass="subheader-text"/>
-        <Button fx:id="btn_assign_bus" text="Assign Bus" onAction="#hideResolutionDialog" maxWidth="Infinity" styleClass="button-green"/>
-        <Button fx:id="btn_assign_driver" text="Assign Driver" onAction="#hideResolutionDialog" maxWidth="Infinity" styleClass="button-purple"/>
+        <Label text="Confirm Resolution" styleClass="subheader-text"/>
+        <Button text="Mark as Resolved" onAction="#handleResolveAlert" maxWidth="Infinity" styleClass="button-green"/>
+        <Button text="Cancel" onAction="#hideResolutionDialog" maxWidth="Infinity" styleClass="button-purple"/>
     </VBox>
 </StackPane>

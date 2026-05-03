@@ -10,7 +10,9 @@ import org.BOGO.controller.ResourceController;
 import org.BOGO.controller.UserController;
 import org.BOGO.domain.transport.Map;
 import org.BOGO.domain.user.User;
+import org.BOGO.service.BusAllocationService;
 import org.BOGO.service.PathBuildingService;
+import org.BOGO.simulation.BusSimulationEngine;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -25,6 +27,7 @@ public class BOGOApplication extends Application {
     private final PathBuildingService pathBuildingService = new PathBuildingService();
     private User currentUser;
     private Map transportMap;
+    private BusSimulationEngine simulationEngine;
 
     public BOGOApplication() {
         instance = this;
@@ -50,6 +53,12 @@ public class BOGOApplication extends Application {
         stage.setMinHeight(650);
         stage.setScene(scene);
         stage.show();
+
+        // Auto-assign spare buses to spare drivers (daemon thread — never blocks UI)
+        Thread autoAssign = new Thread(
+                () -> new BusAllocationService().autoAssign(), "BusAutoAssign");
+        autoAssign.setDaemon(true);
+        autoAssign.start();
     }
 
     public UserController getUserController() {
@@ -86,6 +95,14 @@ public class BOGOApplication extends Application {
 
     public void setTransportMap(Map transportMap) {
         this.transportMap = transportMap;
+    }
+
+    public BusSimulationEngine getSimulationEngine() {
+        return simulationEngine;
+    }
+
+    public void setSimulationEngine(BusSimulationEngine simulationEngine) {
+        this.simulationEngine = simulationEngine;
     }
 
     public static void main(String[] args) {

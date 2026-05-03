@@ -26,8 +26,8 @@
         <HBox spacing="24" VBox.vgrow="ALWAYS">
             <VBox spacing="12" HBox.hgrow="ALWAYS" styleClass="neon-card">
                 <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
-                <Label text="Employees" styleClass="subheader-text"/>
-                <TextField fx:id="txt_search_employee" promptText="Search employee" styleClass="neon-text-field"/>
+                <Label text="Passengers" styleClass="subheader-text"/>
+                <TextField fx:id="txt_search_employee" promptText="Search passenger" styleClass="neon-text-field"/>
                 <ListView fx:id="list_employees" VBox.vgrow="ALWAYS"/>
             </VBox>
             <VBox spacing="12" HBox.hgrow="ALWAYS" styleClass="neon-card">

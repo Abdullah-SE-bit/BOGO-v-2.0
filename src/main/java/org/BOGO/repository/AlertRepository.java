@@ -4,6 +4,8 @@ import org.BOGO.config.DatabaseConfig;
 import org.BOGO.domain.communication.Alert;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AlertRepository {
     public int save(Alert alert) {
@@ -50,5 +52,49 @@ public class AlertRepository {
             System.err.println("[AlertRepository] findById failed: " + e.getMessage());
         }
         return null;
+    }
+
+    public List<Alert> findAll() {
+        return fetchAlerts("SELECT * FROM ALERTS");
+    }
+
+    public List<Alert> findPending() {
+        return fetchAlerts("SELECT * FROM ALERTS WHERE Status = 'OPEN'");
+    }
+
+    private List<Alert> fetchAlerts(String sql) {
+        List<Alert> alerts = new ArrayList<>();
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Timestamp sentTime = rs.getTimestamp("SentTime");
+                alerts.add(new Alert(
+                        rs.getInt("AlertId"),
+                        rs.getInt("SenderDriverId"),
+                        rs.getString("AlertType"),
+                        rs.getString("Priority"),
+                        rs.getString("Message"),
+                        rs.getString("Status"),
+                        sentTime == null ? null : sentTime.toLocalDateTime()
+                ));
+            }
+        } catch (SQLException e) {
+            System.err.println("[AlertRepository] fetchAlerts failed: " + e.getMessage());
+        }
+        return alerts;
+    }
+
+    /** Sets Status = 'RESOLVED' for the given alertId. Returns true if a row was updated. */
+    public boolean markResolved(int alertId) {
+        String sql = "UPDATE ALERTS SET Status = 'RESOLVED' WHERE AlertId = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, alertId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("[AlertRepository] markResolved failed: " + e.getMessage());
+            return false;
+        }
     }
 }

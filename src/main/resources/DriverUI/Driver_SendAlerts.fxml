@@ -27,7 +27,8 @@
             <ToggleButton text="Driver" toggleGroup="$type_group"/>
         </HBox>
         <TextArea fx:id="txt_alert_message" promptText="Describe the issue" prefRowCount="6" styleClass="neon-text-area"/>
-        <!-- TODO: Create 'Message' object. SEND to Admin_ResolveAlert queue. -->
-        <Button fx:id="btn_send_message" text="SEND MESSAGE" maxWidth="Infinity" styleClass="button-purple"/>
+        <Button fx:id="btn_send_message" text="SEND MESSAGE" maxWidth="Infinity"
+                onAction="#handleDriverSendAlert" styleClass="button-purple"/>
+        <Label fx:id="lbl_alert_status" text="" wrapText="true" styleClass="muted-text"/>
     </VBox>
 </VBox>

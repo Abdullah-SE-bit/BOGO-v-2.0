@@ -25,6 +25,8 @@
             <Button fx:id="btn_nav_analytics" text="Analytics" onAction="#loadAdminAnalytics" maxWidth="Infinity" styleClass="nav-button"/>
             <Button fx:id="btn_nav_alerts" text="Resolve Alerts" onAction="#loadAdminAlerts" maxWidth="Infinity" styleClass="nav-button"/>
             <Button fx:id="btn_nav_add_resource" text="Add Resource" onAction="#loadAdminAddResource" maxWidth="Infinity" styleClass="nav-button"/>
+            <Button fx:id="btn_nav_add_stops_routes" text="Add Stops / Routes" onAction="#loadAdminAddStopsRoutes" maxWidth="Infinity" styleClass="nav-button"/>
+            <Button fx:id="btn_nav_assign_route" text="Assign Route" onAction="#loadAdminAssignRoute" maxWidth="Infinity" styleClass="nav-button"/>
             <Region VBox.vgrow="ALWAYS"/>
             <Button text="Logout" onAction="#goMain" maxWidth="Infinity" styleClass="logout-button"/>
         </VBox>

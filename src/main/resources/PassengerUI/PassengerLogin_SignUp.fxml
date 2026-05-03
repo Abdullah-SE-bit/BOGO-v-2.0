@@ -19,23 +19,37 @@
         </fx:define>
         <Label text="BOGO PASSENGER" styleClass="header-text"/>
         <HBox spacing="12">
-            <ToggleButton fx:id="btn_show_login" text="Login" selected="true" toggleGroup="$auth_group" onAction="#showLoginPane" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
-            <ToggleButton fx:id="btn_show_signup" text="Sign Up" toggleGroup="$auth_group" onAction="#showSignupPane" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+            <ToggleButton fx:id="btn_show_login"  text="Login"   selected="true"
+                          toggleGroup="$auth_group" onAction="#showLoginPane"
+                          HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+            <ToggleButton fx:id="btn_show_signup" text="Sign Up"
+                          toggleGroup="$auth_group" onAction="#showSignupPane"
+                          HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
         </HBox>
+
+        <!-- ── LOGIN ──────────────────────────────────────────────── -->
         <VBox fx:id="pane_login" spacing="14">
-            <TextField fx:id="txt_login_email" promptText="Email" styleClass="neon-text-field"/>
+            <TextField     fx:id="txt_login_email"    promptText="Email"    styleClass="neon-text-field"/>
             <PasswordField fx:id="txt_login_password" promptText="Password" styleClass="neon-text-field"/>
-            <Button fx:id="btn_login" text="LOGIN" onAction="#loginPassenger" maxWidth="Infinity" styleClass="button-green"/>
+            <Button fx:id="btn_login" text="LOGIN" onAction="#loginPassenger"
+                    maxWidth="Infinity" styleClass="button-green"/>
         </VBox>
-        <VBox fx:id="pane_signup" visible="false" spacing="14">
-            <TextField fx:id="txt_fname" promptText="First name" styleClass="neon-text-field"/>
-            <TextField fx:id="txt_lname" promptText="Last name" styleClass="neon-text-field"/>
-            <TextField fx:id="txt_signup_email" promptText="Email" styleClass="neon-text-field"/>
-            <PasswordField fx:id="pf_password" promptText="Password" styleClass="neon-text-field"/>
-            <PasswordField fx:id="pf_confirm_password" promptText="Confirm password" styleClass="neon-text-field"/>
-            <!-- TODO: Validation - Passwords match. Email unique. -->
-            <Button fx:id="btn_signup" text="SIGN UP" onAction="#signupPassenger" maxWidth="Infinity" styleClass="button-purple"/>
+
+        <!-- ── SIGN UP ─────────────────────────────────────────────── -->
+        <VBox fx:id="pane_signup" visible="false" spacing="12">
+            <TextField     fx:id="txt_fname"          promptText="First name"         styleClass="neon-text-field"/>
+            <TextField     fx:id="txt_lname"          promptText="Last name"          styleClass="neon-text-field"/>
+            <TextField     fx:id="txt_signup_email"   promptText="Email"              styleClass="neon-text-field"/>
+            <TextField     fx:id="txt_signup_cnic"    promptText="CNIC (13 digits, no dashes)" styleClass="neon-text-field"/>
+            <PasswordField fx:id="pf_password"        promptText="Password (8–20 chars, 1 uppercase, 1 digit)" styleClass="neon-text-field"/>
+            <PasswordField fx:id="pf_confirm_password" promptText="Confirm password"  styleClass="neon-text-field"/>
+            <Button fx:id="btn_signup" text="SIGN UP" onAction="#signupPassenger"
+                    maxWidth="Infinity" styleClass="button-purple"/>
+            <!-- Validation / error feedback -->
+            <Label fx:id="lbl_signup_status" text="" wrapText="true"
+                   style="-fx-text-fill:#ff4f4f; -fx-font-size:12px;"/>
         </VBox>
+
         <Button text="BACK" onAction="#goMain" maxWidth="Infinity" styleClass="button-purple"/>
     </VBox>
 </VBox>

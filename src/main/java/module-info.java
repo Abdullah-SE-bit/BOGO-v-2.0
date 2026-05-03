@@ -5,6 +5,7 @@ module BOGO {
     requires com.microsoft.sqlserver.jdbc;
 
     opens org.BOGO to javafx.fxml;
+    opens org.BOGO.simulation to javafx.fxml;
     exports org.BOGO;
     exports org.BOGO.UI;
     exports org.BOGO.config;
@@ -16,4 +17,5 @@ module BOGO {
     exports org.BOGO.domain.user;
     exports org.BOGO.repository;
     exports org.BOGO.service;
+    exports org.BOGO.simulation;
 }

@@ -111,7 +111,7 @@ public class StopRepository {
         }
     }
 
-    public int save(Stop stop, int locationX, int locationY) {
+    public int save(Stop stop, double latitude, double longitude) {
         try (Connection conn = DatabaseConfig.getConnection()) {
             conn.setAutoCommit(false);
             try {
@@ -119,8 +119,8 @@ public class StopRepository {
                 try (PreparedStatement ps = conn.prepareStatement(
                         "INSERT INTO LOCATIONN (Longitude, Latitude) VALUES (?, ?)",
                         Statement.RETURN_GENERATED_KEYS)) {
-                    ps.setInt(1, locationX);
-                    ps.setInt(2, locationY);
+                    ps.setDouble(1, longitude);
+                    ps.setDouble(2, latitude);
                     ps.executeUpdate();
                     locationId = generatedKey(ps);
                 }
@@ -145,6 +145,27 @@ public class StopRepository {
         } catch (SQLException e) {
             System.err.println("[StopRepository] save failed: " + e.getMessage());
             return -1;
+        }
+    }
+
+    /** Appends connectedStopId to the Connections column of an existing stop (bidirectional link). */
+    public void addConnection(int stopId, int connectedStopId) {
+        String selectSql = "SELECT Connections FROM STOPS WHERE StopId = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement ps = conn.prepareStatement(selectSql)) {
+            ps.setInt(1, stopId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    String existing = rs.getString("Connections");
+                    java.util.List<Integer> ids = parseIds(existing);
+                    if (!ids.contains(connectedStopId)) {
+                        ids.add(connectedStopId);
+                        updateConnections(stopId, ids);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("[StopRepository] addConnection failed: " + e.getMessage());
         }
     }
 

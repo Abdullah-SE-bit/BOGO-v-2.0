@@ -14,8 +14,8 @@
         <Label text="BOGO DRIVER" styleClass="header-text"/>
         <TextField fx:id="txt_driver_id" promptText="Driver ID (ABC-1234-1234)" styleClass="neon-text-field"/>
         <PasswordField fx:id="txt_password" promptText="Password" styleClass="neon-text-field"/>
-        <!-- TODO: Auth Logic - Validate Driver ID format and verify with backend. -->
         <Button fx:id="btn_driver_login" text="LOGIN" onAction="#loginDriver" maxWidth="Infinity" styleClass="button-green"/>
+        <Label fx:id="lbl_driver_login_status" text="" wrapText="true" styleClass="muted-text"/>
         <Button text="BACK" onAction="#goMain" maxWidth="Infinity" styleClass="button-purple"/>
     </VBox>
 </VBox>

@@ -95,11 +95,55 @@ public class BusRepository {
     }
 
     public boolean assignDriver(int busID, int driverID) {
-        return true;
+        String sql = "UPDATE DRIVER SET AssignedBusId = ? WHERE UserId = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, busID);
+            ps.setInt(2, driverID);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("[BusRepository] assignDriver failed: " + e.getMessage());
+            return false;
+        }
     }
 
     public boolean assignRoute(int busID, int routeID) {
-        return true;
+        return true; // Routes are assigned via DRIVER.AssignedRouteId
+    }
+
+    /**
+     * Updates the simulated position of a bus on the map.
+     */
+    public boolean updateLocation(int busID, double latitude, double longitude) {
+        String sql = "UPDATE BUS SET CurrentLatitude = ?, CurrentLongitude = ? WHERE BusId = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setDouble(1, latitude);
+            ps.setDouble(2, longitude);
+            ps.setInt(3, busID);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("[BusRepository] updateLocation failed: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Updates the health metrics of a bus.
+     */
+    public boolean updateHealthMetrics(int busID, double tyreHealth, double engineHealth, double chassisHealth) {
+        String sql = "UPDATE BUS SET TyreHealth = ?, EngineHealth = ?, ChassisHealth = ? WHERE BusId = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setDouble(1, tyreHealth);
+            ps.setDouble(2, engineHealth);
+            ps.setDouble(3, chassisHealth);
+            ps.setInt(4, busID);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("[BusRepository] updateHealthMetrics failed: " + e.getMessage());
+            return false;
+        }
     }
 
     private Bus mapBus(ResultSet rs) throws SQLException {
@@ -110,7 +154,7 @@ public class BusRepository {
         } catch (IllegalArgumentException ex) {
             status = BusStatus.AVAILABLE;
         }
-        return new Bus(
+        Bus bus = new Bus(
                 rs.getInt("BusId"),
                 rs.getString("BusCompany"),
                 rs.getString("Registration"),
@@ -118,5 +162,19 @@ public class BusRepository {
                 status,
                 rs.getInt("Capacity")
         );
+        // Try to read health and location columns (may not exist if schema_extension not yet run)
+        try {
+            bus.setTyreHealth(rs.getDouble("TyreHealth"));
+            bus.setEngineHealth(rs.getDouble("EngineHealth"));
+            bus.setChassisHealth(rs.getDouble("ChassisHealth"));
+        } catch (SQLException ignored) {
+            // Columns not yet added — safe default values already set in Bus constructor
+        }
+        try {
+            double lat = rs.getDouble("CurrentLatitude");
+            double lon = rs.getDouble("CurrentLongitude");
+            bus.setLocation(new org.BOGO.domain.transport.Location(lat, lon));
+        } catch (SQLException ignored) {}
+        return bus;
     }
 }

@@ -17,8 +17,8 @@
         <TextField fx:id="txt_bus_company" promptText="Company" styleClass="neon-text-field"/>
         <TextField fx:id="txt_bus_year" promptText="Year" styleClass="neon-text-field"/>
         <ComboBox fx:id="choice_max_capacity" promptText="Max Capacity" maxWidth="Infinity"/>
-        <!-- BACKEND: POST /api/resources/bus - Check for duplicate Bus Number. -->
-        <Button fx:id="btn_add_bus" text="ADD BUS" maxWidth="Infinity" styleClass="button-green"/>
+        <Button fx:id="btn_add_bus" text="ADD BUS" onAction="#handleAddBus" maxWidth="Infinity" styleClass="button-green"/>
+        <Label fx:id="lbl_bus_status" text="" styleClass="muted-text"/>
     </VBox>
     <VBox prefWidth="380" maxHeight="400" spacing="14" styleClass="neon-card">
         <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
@@ -27,7 +27,7 @@
         <TextField fx:id="txt_driver_lname" promptText="Last Name" styleClass="neon-text-field"/>
         <TextField fx:id="txt_driver_cnic" promptText="CNIC (13 digits)" styleClass="neon-text-field"/>
         <TextField fx:id="txt_driver_email" promptText="Email" styleClass="neon-text-field"/>
-        <!-- BACKEND: POST /api/resources/driver - Return generated ID/Password. -->
-        <Button fx:id="btn_add_driver" text="ADD DRIVER" maxWidth="Infinity" styleClass="button-purple"/>
+        <Button fx:id="btn_add_driver" text="ADD DRIVER" onAction="#handleAddDriver" maxWidth="Infinity" styleClass="button-purple"/>
+        <Label fx:id="lbl_driver_status" text="" styleClass="muted-text"/>
     </VBox>
 </HBox>

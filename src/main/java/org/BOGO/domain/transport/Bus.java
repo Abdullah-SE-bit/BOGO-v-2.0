@@ -11,10 +11,13 @@ public class Bus {
     private BusStatus busStatus;
 
     private int capacity;
-
     private int currentCapacity;
-
     private Location location;
+
+    // Health metrics (mapped to new DB columns)
+    private double tyreHealth = 100.0;
+    private double engineHealth = 100.0;
+    private double chassisHealth = 100.0;
 
     // ---------- Constructors ----------
     public Bus(int ID, int cap) {
@@ -34,6 +37,7 @@ public class Bus {
         this.currentCapacity = capacity;
     }
 
+
     // ---------- setters ----------
     public void  setBusID(int ID)          { busID = ID; }
     public void setBusCompany(String busCompany) { this.busCompany = busCompany; }
@@ -43,6 +47,9 @@ public class Bus {
     public void  setCapacity(int cap)       { capacity=cap; }
     public void  setCurrentCapacity(int cap) { currentCapacity = cap; }
     public void  setLocation(Location lt)       { location = lt; }
+    public void  setTyreHealth(double tyreHealth) { this.tyreHealth = tyreHealth; }
+    public void  setEngineHealth(double engineHealth) { this.engineHealth = engineHealth; }
+    public void  setChassisHealth(double chassisHealth) { this.chassisHealth = chassisHealth; }
 
     // ---------- getters ----------
     public int getBusID()          { return busID; }
@@ -53,6 +60,10 @@ public class Bus {
     public int getCapacity()       { return capacity; }
     public int getCurrentCapacity() { return currentCapacity; }
     public Location getLocation()       { return location; }
+    public double getTyreHealth()    { return tyreHealth; }
+    public double getEngineHealth()  { return engineHealth; }
+    public double getChassisHealth() { return chassisHealth; }
+
 
     public boolean allocateDriver(Driver d) {
         boolean returnValue = true;
