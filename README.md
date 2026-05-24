@@ -73,4 +73,3 @@ If you hit module-related runtime errors, ensure your JAVA_HOME points to a JDK 
 - I can run the app (if you want) and help fix runtime module/plugin issues.
 
 ---
-If you'd like, I can commit this README update and run the app locally to confirm startup — tell me which next step you prefer.
