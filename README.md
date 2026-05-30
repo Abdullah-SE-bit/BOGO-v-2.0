@@ -4,10 +4,9 @@
 - **BOGO**: A desktop JavaFX application for managing bus operations — passenger booking, driver dashboards, admin tools, alerts, and an interactive route/map visualization.
 
 **Tech Stack**
-- **Java (JDK 25)**: Application language; module system (`module-info.java`) and modern Java language features (pattern matching, enhanced generics usage).
-- **JavaFX (21.0.5)**: UI toolkit — FXML views, controllers, CSS theming, scene graph rendering for the interactive map.
-- **Maven**: Build system and dependency management (`pom.xml`). Uses `javafx-maven-plugin` and `exec-maven-plugin` for running the app.
-- **Microsoft SQL Server**: Relational database; JDBC driver `mssql-jdbc` used by repository layer. Schema scripts live at the project root.
+- Java (JDK 25)
+- JavaFX (21.0.5)
+- Microsoft SQL Server
 
 **Primary Libraries / Files**
 - `pom.xml`: Maven configuration and plugins. See [pom.xml](pom.xml).
