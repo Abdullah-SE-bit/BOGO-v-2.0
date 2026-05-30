@@ -9,16 +9,16 @@
 - Microsoft SQL Server
 
 **Primary Libraries / Files**
-- `pom.xml`: Maven configuration and plugins. See [pom.xml](pom.xml).
-- `module-info.java`: Java module declarations and exported packages. See [src/main/java/module-info.java](src/main/java/module-info.java).
 - Main entrypoint: `org.BOGO.BOGOApplication` — [src/main/java/org/BOGO/BOGOApplication.java](src/main/java/org/BOGO/BOGOApplication.java).
 - Main UI controller: `org.BOGO.BOGOUIController` — [src/main/java/org/BOGO/BOGOUIController.java](src/main/java/org/BOGO/BOGOUIController.java).
 - Primary FXML/Assets: [src/main/resources/Main.fxml](src/main/resources/Main.fxml), [src/main/resources/NeonTheme.css](src/main/resources/NeonTheme.css) and other views under [src/main/resources](src/main/resources).
 - Database schema and seeds: [schema.sql](schema.sql), `seed_*.sql` files at project root.
+- `pom.xml`: Maven configuration and plugins. See [pom.xml](pom.xml).
+- `module-info.java`: Java module declarations and exported packages. See [src/main/java/module-info.java](src/main/java/module-info.java).
 
 **Architecture & Design**
 - **Modular Java application:** (`module-info.java`) organized into packages i.e `controller`, `service`, `repository`, `domain`, `config`, and `UI`.
-- **Layered pattern:**Controllers coordinate UI actions, Services implement business logic (e.g., `PathBuildingService`) and use Domain instances to ease the execution of app, Repositories handle DB interactions.
+- **Layered pattern:** Controllers coordinate UI actions, Services implement business logic (e.g., `PathBuildingService`) and use Domain instances to ease the execution of app, Repositories handle DB interactions.
 - **JavaFX MVC-style UI:** FXML views map to controller classes; styling via CSS. The application uses a single `Application` subclass (`BOGOApplication`) as a central coordinator / singleton for shared services and state.
 - **Map & Path model:** Domain objects under `org.BOGO.domain.transport` model stops, connections and maps. `PathBuildingService` builds routes from persisted map data and provides in-memory structures used by the map renderer in the UI.
 
