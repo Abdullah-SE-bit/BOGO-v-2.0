@@ -17,16 +17,15 @@
 - Database schema and seeds: [schema.sql](schema.sql), `seed_*.sql` files at project root.
 
 **Architecture & Design**
-- Modular Java application (`module-info.java`) organized into packages: `controller`, `service`, `repository`, `domain`, `config`, and `UI`.
-- Layered pattern (UI → Controller → Service → Repository → DB): Controllers coordinate UI actions, Services implement business logic (e.g., `PathBuildingService`), Repositories handle DB interactions.
-- JavaFX MVC-style UI: FXML views map to controller classes; styling via CSS. The application uses a single `Application` subclass (`BOGOApplication`) as a central coordinator / singleton for shared services and state.
-- Map & Path model: Domain objects under `org.BOGO.domain.transport` model stops, connections and maps. `PathBuildingService` builds routes from persisted map data and provides in-memory structures used by the map renderer in the UI.
+- **Modular Java application:** (`module-info.java`) organized into packages i.e `controller`, `service`, `repository`, `domain`, `config`, and `UI`.
+- **Layered pattern:**Controllers coordinate UI actions, Services implement business logic (e.g., `PathBuildingService`) and use Domain instances to ease the execution of app, Repositories handle DB interactions.
+- **JavaFX MVC-style UI:** FXML views map to controller classes; styling via CSS. The application uses a single `Application` subclass (`BOGOApplication`) as a central coordinator / singleton for shared services and state.
+- **Map & Path model:** Domain objects under `org.BOGO.domain.transport` model stops, connections and maps. `PathBuildingService` builds routes from persisted map data and provides in-memory structures used by the map renderer in the UI.
 
 **Features & Implementation Details**
-- Interactive map rendering: Canvas/Pane-based rendering of stops and connections using JavaFX shapes (`Circle`, `Line`) and animations (`StrokeTransition`, `Glow`). (See `BOGOUIController`.)
-- Booking workflow: Passenger booking UI uses `PathBuildingService` to compute routes and book rides via `BookingController`.
-- Multi-role support: Admin, Driver, Passenger flows implemented via separate FXML shells and controllers under `src/main/resources/AdminUI`, `DriverUI`, and `PassengerUI`.
-- Authentication: Simple login/signup UI wired to `UserController` (backed by DB repository code in `repository` package).
-- Database-first model: SQL schema files provide the table definitions for Users, Drivers, Passengers, Routes, Stops, Buses, Bookings, Notifications.
-
+- **Interactive map rendering:** Canvas/Pane-based rendering of stops and connections using JavaFX shapes (`Circle`, `Line`) and animations (`StrokeTransition`, `Glow`). (See `BOGOUIController`.)
+- **Booking workflow:** Passenger booking UI uses `PathBuildingService` to compute routes and book rides via `BookingController`.
+- **Multi-role support:** Admin, Driver, Passenger flows implemented via separate FXML shells and controllers under `src/main/resources/AdminUI`, `DriverUI`, and `PassengerUI`.
+- **Authentication:** Simple login/signup UI wired to `UserController` (backed by DB repository code in `repository` package).
+- **Database-first model:** SQL schema files provide the table definitions for Users, Drivers, Passengers, Routes, Stops, Buses, Bookings, Notifications.
 ---
